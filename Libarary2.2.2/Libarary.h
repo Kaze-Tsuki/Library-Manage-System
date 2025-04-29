@@ -12,33 +12,34 @@ using namespace std;
 typedef struct Date {
 	int year, month, day;
 	Date();
-	void input_date();
 	void change_date();
+	void print_date();
 }Date;
-
-typedef struct User {
-	string name;
-	vector<Book> history;
-	vector<Book> lending;
-	User();
-	void borrow();
-	void giveBack();
-	void checkDue();
-}User;
 
 class Book {
 private:
 	string name;
 	string author;
-	Date published, borrow;
+	Date published, due;
 	string ISBN;
 	string category;
-	size_t copyId;
+	size_t copyAmount;
 	bool is_available;
 public:
 	Book();
-	Book init();
 	Book change();
+	void print_book();
 };
+
+
+typedef struct User {
+	string name;
+	vector<Book> history;
+	vector<Book> lending;
+	User(string& name);
+	void borrow();
+	void giveBack();
+	void checkDue();
+}User;
 
 #endif

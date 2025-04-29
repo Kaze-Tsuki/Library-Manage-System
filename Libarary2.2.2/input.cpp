@@ -16,6 +16,20 @@ void set_mid(sf::RectangleShape& rect, sf::Text& txt)
     txt.setPosition(buttonCenter);
 }
 
+void renderShape(sf::RenderWindow& window, const vector<sf::Drawable*> drawables)
+{
+	for (auto drawable : drawables) {
+		window.draw(*drawable);
+	}
+}
+
+void renderText(sf::RenderWindow& window, const vector<sf::Text*> drawables)
+{
+	for (auto drawable : drawables) {
+		window.draw(*drawable);
+	}
+}
+
 void OpenInputText(string& s)
 {
     sf::RenderWindow window(sf::VideoMode(600, 130), "Text Input");

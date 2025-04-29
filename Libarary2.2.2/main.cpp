@@ -1,6 +1,6 @@
 #include <SFML/Graphics.hpp>
 #include "input.h"
-//#include "Libarary.h"
+#include "Libarary.h"
 #include <thread>
 #include <iostream>
 
@@ -19,7 +19,7 @@ int main()
 
     // 輸入框
     sf::RectangleShape input_text_btn(sf::Vector2f(60, 30));
-    input_text_btn.setFillColor(sf::Color(200, 200, 200));
+    input_text_btn.setFillColor(sf::Color(180, 180, 180));
     input_text_btn.setOutlineColor(sf::Color::Black);
     input_text_btn.setOutlineThickness(1);
     input_text_btn.setPosition(20, 20);
@@ -29,7 +29,12 @@ int main()
     // set position mid
     set_mid(input_text_btn, input_text_innerText);
 
-    bool isTyping = false;    // 是否正在輸入
+    sf::RectangleShape AddBook(sf::Vector2f(60, 30));
+    AddBook.setFillColor(sf::Color(180, 180, 180));
+    AddBook.setOutlineColor(sf::Color::Black);
+    AddBook.setOutlineThickness(1);
+    AddBook.setPosition(20, 70);
+
     std::string userInput = ""; // 儲存輸入的文字
 
     while (window.isOpen())
@@ -50,6 +55,11 @@ int main()
                             thread(OpenInputText, ref(userInput)).detach();
                         }
                     }
+					else if (AddBook.getGlobalBounds().contains(mousePos)) {
+						Book book;
+						book.change();
+						book.print_book();
+					}
                 }
             }
             
@@ -59,6 +69,7 @@ int main()
         window.clear(sf::Color(70, 70, 70));
         window.draw(input_text_btn);
         window.draw(input_text_innerText);
+		window.draw(AddBook);
 
         window.display();
     }
