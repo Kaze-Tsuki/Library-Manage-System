@@ -4,7 +4,7 @@
 
 using namespace std;
 
-bool runningInputText = false;
+atomic<bool> runningInputText = false;
 
 void set_mid(sf::RectangleShape& rect, sf::Text& txt)
 {
@@ -16,6 +16,28 @@ void set_mid(sf::RectangleShape& rect, sf::Text& txt)
     txt.setPosition(buttonCenter);
 }
 
+void initInputBox(sf::RectangleShape& inputBox, sf::Text& inputText, sf::Text& Label, const size_t& x, const size_t& y)
+{
+	inputBox.setFillColor(sf::Color::White);
+	inputBox.setOutlineColor(sf::Color::Black);
+	inputBox.setOutlineThickness(2);
+	inputBox.setPosition(x, y);
+	Label.setFillColor(sf::Color::Black);
+	Label.setPosition(x + 5, y - 25);
+	inputText.setFillColor(sf::Color::Black);
+	inputText.setPosition(x + 5, y + 5);
+}
+
+void initButton(sf::RectangleShape& btn, sf::Text& txt, const size_t& x, const size_t& y)
+{
+	btn.setFillColor(sf::Color(180, 180, 180));
+	btn.setOutlineColor(sf::Color::Black);
+	btn.setOutlineThickness(1);
+	btn.setPosition(x, y);
+	txt.setFillColor(sf::Color::Black);
+	set_mid(btn, txt);
+}
+
 void renderShape(sf::RenderWindow& window, const vector<sf::Drawable*> drawables)
 {
 	for (auto drawable : drawables) {
@@ -23,15 +45,29 @@ void renderShape(sf::RenderWindow& window, const vector<sf::Drawable*> drawables
 	}
 }
 
-void renderText(sf::RenderWindow& window, const vector<sf::Text*> drawables)
+void inputEvent(sf::Event& event, string& s, const char& cmin, const char& cmax, const int& length)
 {
-	for (auto drawable : drawables) {
-		window.draw(*drawable);
+	if (event.type == sf::Event::TextEntered) {
+		if (event.text.unicode == 8) { // 處理Backspace
+			if (!s.empty()) {
+				s.pop_back();
+			}
+		}
+		else if (event.text.unicode >= cmin && event.text.unicode <= cmax) { // 處理英文字元
+			s += static_cast<char>(event.text.unicode);
+			if (s.size() > length) {
+				s = s.substr(1, length); // 限制輸入長度
+			}
+		}
 	}
 }
 
 void OpenInputText(string& s)
 {
+    if (runningInputText.exchange(true)) {
+		cout << "Already running input text window." << endl;
+		return;
+    }
     sf::RenderWindow window(sf::VideoMode(600, 130), "Text Input");
 
     // 輸入框
@@ -67,49 +103,39 @@ void OpenInputText(string& s)
                 window.close();
 
             // 滑鼠點擊輸入框
-            if (event.type == sf::Event::MouseButtonPressed) {
-                if (event.mouseButton.button == sf::Mouse::Left) {
-                    sf::Vector2f mousePos(event.mouseButton.x, event.mouseButton.y);
-                    if (inputBox.getGlobalBounds().contains(mousePos)) {
-                        isTyping = true;  // 點到輸入框，開始輸入
-                    }
-                    else if (submit_btn.getGlobalBounds().contains(mousePos)) {
-                        isTyping = false; // 結束輸入
-                        cout << "輸入了: " << userInput << endl;
-                        s = userInput;
-                        runningInputText = false;
-                        return;
-                    }
-                    else {
-                        isTyping = false;
-                    }
+            if (event.type == sf::Event::MouseButtonPressed && 
+                event.mouseButton.button == sf::Mouse::Left) {
+                sf::Vector2f mousePos(event.mouseButton.x, event.mouseButton.y);
+                if (inputBox.getGlobalBounds().contains(mousePos)) {
+                    isTyping = true;  // 點到輸入框，開始輸入
+                }
+                else if (submit_btn.getGlobalBounds().contains(mousePos)) {
+                    isTyping = false; // 結束輸入
+                    cout << "輸入了: " << userInput << endl;
+                    s = userInput;
+                    runningInputText.store(false); // 關閉 flag
+                    return;
+                }
+                else {
+                    isTyping = false;
                 }
             }
 
             // 鍵盤輸入文字
-            if (isTyping && event.type == sf::Event::TextEntered) {
-                if (event.text.unicode == 8) { // 處理Backspace
-                    if (!userInput.empty()) {
-                        userInput.pop_back();
-                    }
-                }
-                else if (event.text.unicode < 128) { // 處理英文字元
-                    userInput += static_cast<char>(event.text.unicode);
-                }
-                inputText.setString(userInput); // 更新畫面上的文字
+            if (isTyping) {
+				inputEvent(event, userInput, ' ', '~', 20); // 限制輸入範圍和長度
+				inputText.setString(userInput); // 更新畫面上的文字
             }
 
         }
 
         window.clear(sf::Color(200, 200, 200));
 
-        window.draw(inputBox);
-        window.draw(inputText);
-        window.draw(submit_btn);
-        window.draw(submit_btn_innerText);
+		renderShape(window, { &submit_btn , &submit_btn_innerText, &inputBox , &inputText });
+		//window.draw(inputText);
 
         window.display();
     }
-    runningInputText = false;
+    runningInputText.store(false); // 關閉 flag
     return;
 }

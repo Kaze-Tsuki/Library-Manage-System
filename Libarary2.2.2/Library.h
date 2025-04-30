@@ -6,14 +6,17 @@
 #include <thread>
 #include <iostream>
 #include <vector>
+#include <atomic>
 
 using namespace std;
 
 typedef struct Date {
 	int year, month, day;
+	atomic<bool> changing;
 	Date();
 	void change_date();
 	void print_date();
+	string getString();
 }Date;
 
 class Book {
@@ -25,9 +28,10 @@ private:
 	string category;
 	size_t copyAmount;
 	bool is_available;
+	atomic<bool> changing;
 public:
 	Book();
-	Book change();
+	void change();
 	void print_book();
 };
 

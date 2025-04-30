@@ -1,6 +1,6 @@
 #include <SFML/Graphics.hpp>
 #include "input.h"
-#include "Libarary.h"
+#include "Library.h"
 #include <thread>
 #include <iostream>
 
@@ -19,21 +19,12 @@ int main()
 
     // 輸入框
     sf::RectangleShape input_text_btn(sf::Vector2f(60, 30));
-    input_text_btn.setFillColor(sf::Color(180, 180, 180));
-    input_text_btn.setOutlineColor(sf::Color::Black);
-    input_text_btn.setOutlineThickness(1);
-    input_text_btn.setPosition(20, 20);
-
     sf::Text input_text_innerText("Input", font, 20);
-    input_text_innerText.setFillColor(sf::Color::Black);
-    // set position mid
-    set_mid(input_text_btn, input_text_innerText);
+	initButton(input_text_btn, input_text_innerText, 20, 20);
 
     sf::RectangleShape AddBook(sf::Vector2f(60, 30));
-    AddBook.setFillColor(sf::Color(180, 180, 180));
-    AddBook.setOutlineColor(sf::Color::Black);
-    AddBook.setOutlineThickness(1);
-    AddBook.setPosition(20, 70);
+	sf::Text AddBookInnerText("Add Book", font, 20);
+	initButton(AddBook, AddBookInnerText, 100, 20);
 
     std::string userInput = ""; // 儲存輸入的文字
 
@@ -48,12 +39,7 @@ int main()
                 if (event.mouseButton.button == sf::Mouse::Left) {
                     sf::Vector2f mousePos(event.mouseButton.x, event.mouseButton.y);
                     if (input_text_btn.getGlobalBounds().contains(mousePos)) {
-                        if (runningInputText)
-                            cout << "This window is already open!\n";
-                        else {
-                            runningInputText = true;
-                            thread(OpenInputText, ref(userInput)).detach();
-                        }
+                        thread(OpenInputText, ref(userInput)).detach();
                     }
 					else if (AddBook.getGlobalBounds().contains(mousePos)) {
 						Book book;
@@ -67,9 +53,8 @@ int main()
         }
 
         window.clear(sf::Color(70, 70, 70));
-        window.draw(input_text_btn);
-        window.draw(input_text_innerText);
-		window.draw(AddBook);
+
+		renderShape(window, { &input_text_btn , &input_text_innerText , &AddBook , &AddBookInnerText });
 
         window.display();
     }
