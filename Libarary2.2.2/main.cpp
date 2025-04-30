@@ -18,15 +18,20 @@ int main()
     }
 
     // 輸入框
-    sf::RectangleShape input_text_btn(sf::Vector2f(60, 30));
-    sf::Text input_text_innerText("Input", font, 20);
-	initButton(input_text_btn, input_text_innerText, 20, 20);
-
-    sf::RectangleShape AddBook(sf::Vector2f(60, 30));
+	// AddBook
+    sf::RectangleShape AddBook(sf::Vector2f(100, 50));
 	sf::Text AddBookInnerText("Add Book", font, 20);
-	initButton(AddBook, AddBookInnerText, 100, 20);
+	initButton(AddBook, AddBookInnerText, 30, 30);
+
+	// PrintBook
+	sf::RectangleShape PrintBook(sf::Vector2f(100, 50));
+	sf::Text PrintBookInnerText("Print Book", font, 20);
+	initButton(PrintBook, PrintBookInnerText, 30, 100);
+
 
     std::string userInput = ""; // 儲存輸入的文字
+	Library library;
+    Book* book;
 
     while (window.isOpen())
     {
@@ -35,18 +40,20 @@ int main()
         {
             if (event.type == sf::Event::Closed)
                 window.close();
-            if (event.type == sf::Event::MouseButtonPressed) {
-                if (event.mouseButton.button == sf::Mouse::Left) {
-                    sf::Vector2f mousePos(event.mouseButton.x, event.mouseButton.y);
-                    if (input_text_btn.getGlobalBounds().contains(mousePos)) {
-                        thread(OpenInputText, ref(userInput)).detach();
-                    }
-					else if (AddBook.getGlobalBounds().contains(mousePos)) {
-						Book book;
-						book.change();
-						book.print_book();
-					}
+            if (event.type == sf::Event::MouseButtonPressed &&
+                event.mouseButton.button == sf::Mouse::Left) {
+                sf::Vector2f mousePos(event.mouseButton.x, event.mouseButton.y);
+                if (AddBook.getGlobalBounds().contains(mousePos)) {
+					book = new Book();
+                    book->change();
+					library.addBook(book);
                 }
+				else if (PrintBook.getGlobalBounds().contains(mousePos)) {
+					// Print book
+					cout << "Print Book" << endl;
+					thread(&Library::printBooks, &library).detach();
+				}
+				
             }
             
 
@@ -54,7 +61,7 @@ int main()
 
         window.clear(sf::Color(70, 70, 70));
 
-		renderShape(window, { &input_text_btn , &input_text_innerText , &AddBook , &AddBookInnerText });
+		renderShape(window, { &AddBook , &AddBookInnerText , &PrintBook , &PrintBookInnerText });
 
         window.display();
     }
