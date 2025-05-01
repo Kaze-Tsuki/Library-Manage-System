@@ -8,6 +8,9 @@
 using namespace std;
 
 Date::Date() :year(2020), month(1), day(1) {};
+Date::Date(int y, int m, int d) : year(y), month(m), day(d) {
+	changing.store(false);
+}
 
 void Date::change_date() {
     if (changing.exchange(true)) {
@@ -15,24 +18,25 @@ void Date::change_date() {
         return;
     }
     sf::RenderWindow window(sf::VideoMode(800, 170), "Text Input");
+    window.setFramerateLimit(30);
 
     // 輸入框
     // Year
     sf::RectangleShape inputYear(sf::Vector2f(200, 50));
     sf::Text Yeartxt("Year", font, 20);
-    sf::Text inputYearText("2020", font, 24);
+    sf::Text inputYearText(to_string(year), font, 24);
     initInputBox(inputYear, inputYearText, Yeartxt, 50, 50);
 
     // Month
     sf::RectangleShape inputMonth(sf::Vector2f(200, 50));
     sf::Text Monthtxt("Month", font, 20);
-    sf::Text inputMonthText("1", font, 24);
+    sf::Text inputMonthText(to_string(month), font, 24);
     initInputBox(inputMonth, inputMonthText, Monthtxt, 300, 50);
 
     // Day
     sf::RectangleShape inputDay(sf::Vector2f(200, 50));
     sf::Text Daytxt("Day", font, 20);
-    sf::Text inputDayText("1", font, 24);
+    sf::Text inputDayText(to_string(day), font, 24);
     initInputBox(inputDay, inputDayText, Daytxt, 550, 50);
 
     sf::RectangleShape submit_btn(sf::Vector2f(100, 50));
@@ -60,80 +64,49 @@ void Date::change_date() {
                 window.close();
 
             // 滑鼠點擊輸入框
-            if (event.type == sf::Event::MouseButtonPressed) {
-                if (event.mouseButton.button == sf::Mouse::Left) {
-                    sf::Vector2f mousePos(event.mouseButton.x, event.mouseButton.y);
-                    if (inputYear.getGlobalBounds().contains(mousePos)) {
-                        inyear = true, inmonth = false, inday = false;
-                    }
-                    else if (inputMonth.getGlobalBounds().contains(mousePos)) {
-                        inyear = false, inmonth = true, inday = false;
-                    }
-                    else if (inputDay.getGlobalBounds().contains(mousePos)) {
-                        inyear = false, inmonth = false, inday = true;
-                    }
-                    else if (submit_btn.getGlobalBounds().contains(mousePos)) {
-                        inyear = false, inmonth = false, inday = false;
-                        if (syear == "") syear = "2020";
-                        if (smonth == "") smonth = "1";
-                        if (sday == "") sday = "1";
-                        year = max(min(stoi(syear), 3000), 1);
-                        month = max(min(stoi(smonth), 12), 1);
-                        day = max(min(stoi(sday), 31), 1);
-                        window.close();
-                    }
-                    else {
-                        inyear = false, inmonth = false, inday = false;
-                    }
+            if (event.type == sf::Event::MouseButtonPressed && 
+                event.mouseButton.button == sf::Mouse::Left) {
+                sf::Vector2f mousePos(event.mouseButton.x, event.mouseButton.y);
+                if (inputYear.getGlobalBounds().contains(mousePos)) {
+                    inyear = true, inmonth = false, inday = false;
+                }
+                else if (inputMonth.getGlobalBounds().contains(mousePos)) {
+                    inyear = false, inmonth = true, inday = false;
+                }
+                else if (inputDay.getGlobalBounds().contains(mousePos)) {
+                    inyear = false, inmonth = false, inday = true;
+                }
+                else if (submit_btn.getGlobalBounds().contains(mousePos)) {
+                    inyear = false, inmonth = false, inday = false;
+                    if (syear == "") syear = "2020";
+                    if (smonth == "") smonth = "1";
+                    if (sday == "") sday = "1";
+                    year = max(min(stoi(syear), 3000), 1);
+                    month = max(min(stoi(smonth), 12), 1);
+                    day = max(min(stoi(sday), 31), 1);
+                    window.close();
+                }
+                else {
+                    inyear = false, inmonth = false, inday = false;
                 }
             }
 
             // 鍵盤輸入文字
-            if (inyear && event.type == sf::Event::TextEntered) {
-                if (event.text.unicode == 8) { // 處理Backspace
-                    if (!syear.empty()) {
-                        syear.pop_back();
-                    }
-                }
-                else if (event.text.unicode <= '9' && event.text.unicode >= '0') { // 處理英文字元
-                    syear += static_cast<char>(event.text.unicode);
-                    if (syear.size() > 4) {
-                        syear = syear.substr(1, 4); // 限制輸入長度
-                    }
-                }
+            if (inyear) {
+				inputEvent(event, syear, '0', '9', 4);
                 inputYearText.setString(syear); // 更新畫面上的文字
             }
 
-            if (inmonth && event.type == sf::Event::TextEntered) {
-                if (event.text.unicode == 8) { // 處理Backspace
-                    if (!smonth.empty()) {
-                        smonth.pop_back();
-                    }
-                }
-                else if (event.text.unicode <= '9' && event.text.unicode >= '0') { // 處理英文字元
-                    smonth += static_cast<char>(event.text.unicode);
-                    if (smonth.size() > 2) {
-                        smonth = smonth.substr(1, 2); // 限制輸入長度
-                    }
-                }
+            if (inmonth) {
+				inputEvent(event, smonth, '0', '9', 2);
                 inputMonthText.setString(smonth); // 更新畫面上的文字
             }
 
-            if (inday && event.type == sf::Event::TextEntered) {
-                if (event.text.unicode == 8) { // 處理Backspace
-                    if (!sday.empty()) {
-                        sday.pop_back();
-                    }
-                }
-                else if (event.text.unicode <= '9' && event.text.unicode >= '0') { // 處理英文字元
-                    sday += static_cast<char>(event.text.unicode);
-                    if (sday.size() > 2) {
-                        sday = sday.substr(1, 2); // 限制輸入長度
-                    }
-                }
+            if (inday) {
+				inputEvent(event, sday, '0', '9', 2);
                 inputDayText.setString(sday); // 更新畫面上的文字
             }
-
+            this_thread::sleep_for(std::chrono::milliseconds(5));
         }
 
         window.clear(sf::Color(200, 200, 200));
@@ -154,6 +127,12 @@ string Date::getString() {
 
 void Date::print_date() {
     cout << year << "-" << month << "-" << day << endl;
+}
+
+void Date::operator=(const Date& other) {
+    year = other.year;
+    month = other.month;
+    day = other.day;
 }
 
 User::User(string& name) : name(name) {}
@@ -186,6 +165,7 @@ void Book::change() {
         return;
     }
     sf::RenderWindow window(sf::VideoMode(530, 540), "ADD Book");
+    window.setFramerateLimit(30);
 
     // Name
     sf::RectangleShape inputName(sf::Vector2f(300, 50));
@@ -298,25 +278,26 @@ void Book::change() {
 
             // 鍵盤輸入文字
             if (inname) {
-                inputEvent(event, sname, 'A', 'z', 20);
+                inputEvent(event, sname, ' ', 'z', 17);
                 inputNameText.setString(sname); // 更新畫面上的文字
             }
-            if (inauthor) {
-                inputEvent(event, sauthor, 'A', 'z', 20);
+            else if (inauthor) {
+                inputEvent(event, sauthor, ' ', 'z', 17);
                 inputAuthorText.setString(sauthor); // 更新畫面上的文字
             }
-            if (inISBN) {
+            else if (inISBN) {
                 inputEvent(event, sISBN, '0', '9', 10);
                 inputISBNText.setString(sISBN); // 更新畫面上的文字
             }
-            if (incategory) {
-                inputEvent(event, scategory, 'A', 'z', 20);
+            else if (incategory) {
+                inputEvent(event, scategory, ' ', 'z', 17);
                 inputCategoryText.setString(scategory); // 更新畫面上的文字
             }
-            if (incopyAmount) {
+            else if (incopyAmount) {
                 inputEvent(event, scopyAmount, '0', '9', 3);
                 inputcopyAmountText.setString(scopyAmount); // 更新畫面上的文字
             }
+            this_thread::sleep_for(std::chrono::milliseconds(7));
         }
         window.clear(sf::Color(200, 200, 200));
 
@@ -384,3 +365,23 @@ void Book::display(sf::RenderWindow& window, int x, int y) {
 	publishedText.setPosition(x, y + 150);
 	window.draw(publishedText);
 }
+
+void Book::displayBrief(sf::RenderWindow& window, int x, int y) {
+	sf::Text nameText("Name: " + name, font, 20);
+	nameText.setFillColor(sf::Color::Black);
+	nameText.setPosition(x, y+5);
+	sf::Text authorText("Author: " + author, font, 20);
+	authorText.setFillColor(sf::Color::Black);
+	authorText.setPosition(x, y+30);
+	sf::Text CategoryText("Category: " + category, font, 20);
+	CategoryText.setFillColor(sf::Color::Black);
+	CategoryText.setPosition(x + 370, y+5);
+	window.draw(nameText);
+	sf::Text copyAmountText("Available: " + to_string(availableCopies)
+		+ '/' + to_string(copyAmount), font, 18);
+	copyAmountText.setFillColor(sf::Color::Black);
+	copyAmountText.setPosition(x + 730, y+30);
+	renderShape(window, { &nameText, &authorText, &CategoryText, &copyAmountText });
+	
+}
+

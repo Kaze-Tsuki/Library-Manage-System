@@ -1,6 +1,7 @@
 #include <SFML/Graphics.hpp>
 #include <iostream>
 #include "input.h"
+#include <thread>
 
 using namespace std;
 
@@ -69,6 +70,7 @@ void OpenInputText(string& s)
 		return;
     }
     sf::RenderWindow window(sf::VideoMode(600, 130), "Text Input");
+    window.setFramerateLimit(30);
 
     // 輸入框
     sf::RectangleShape inputBox(sf::Vector2f(400, 50));
@@ -122,19 +124,17 @@ void OpenInputText(string& s)
             }
 
             // 鍵盤輸入文字
-            if (isTyping) {
+            if (isTyping && event.type == sf::Event::TextEntered) {
 				inputEvent(event, userInput, ' ', '~', 20); // 限制輸入範圍和長度
 				inputText.setString(userInput); // 更新畫面上的文字
-            }
+                window.clear(sf::Color(200, 200, 200));
 
+                renderShape(window, { &submit_btn , &submit_btn_innerText, &inputBox , &inputText });
+
+                window.display();
+            }
         }
 
-        window.clear(sf::Color(200, 200, 200));
-
-		renderShape(window, { &submit_btn , &submit_btn_innerText, &inputBox , &inputText });
-		//window.draw(inputText);
-
-        window.display();
     }
     runningInputText.store(false); // 關閉 flag
     return;
