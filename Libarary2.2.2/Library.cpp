@@ -63,8 +63,8 @@ void Library::borrowBook(Book* book) {
 
 	// Submit
 	sf::RectangleShape submit_btn(sf::Vector2f(100, 50));
-	submit_btn.setFillColor(sf::Color::Green);
-	submit_btn.setOutlineColor(sf::Color::Black);
+	submit_btn.setFillColor(sf::Color(168, 255, 255));
+	submit_btn.setOutlineColor(sf::Color(167, 167, 211));
 	submit_btn.setOutlineThickness(2);
 	submit_btn.setPosition(50, 250);
 	sf::Text submit_btn_innerText("Submit", font, 24);
@@ -104,7 +104,7 @@ void Library::borrowBook(Book* book) {
 			}
 			this_thread::sleep_for(std::chrono::milliseconds(5));
 		}
-		window.clear(sf::Color(200, 200, 200));
+		window.clear(sf::Color(210, 233, 233));
 
 		renderShape(window, { &inputName, &submit_btn , &NameLabel, &submit_btn_innerText,
 			&inputNameText , &DueDate_btn , &DueDateText });
@@ -221,16 +221,16 @@ void Library::printBooks(const size_t& start){
 				}
 				else if (borrowBtn.getGlobalBounds().contains(mousePos)) {
 					// borrow
-					borrowBook(books[curBook]);
+					thread(&Library::borrowBook, this, books[curBook]).detach();
 				}
 				else if (giveBackBtn.getGlobalBounds().contains(mousePos)) {
 					// give back
-					giveBackBook(books[curBook]);
+					thread(&Library::giveBackBook, this, books[curBook]).detach();
 				}
 			}
 			this_thread::sleep_for(std::chrono::milliseconds(30));
 		}
-		window.clear(sf::Color(200, 200, 200));
+		window.clear(sf::Color(210, 233, 233));
 		books[curBook]->display(window, 35, 35);
 		renderShape(window, { &nextBtn, &prevBtn, &borrowBtn, &giveBackBtn,
 			&nextBtnText, &prevBtnText, &borrowBtnText, &giveBackBtnText , &pageText });
@@ -250,8 +250,8 @@ void Library::listBooks() {
 	sf::RectangleShape bookBtn[10];
 	for (int i = 0; i < 10; i++) {
 		bookBtn[i].setSize(sf::Vector2f(850, 60));
-		bookBtn[i].setFillColor(sf::Color(200, 200, 200));
-		bookBtn[i].setOutlineColor(sf::Color::Black);
+		bookBtn[i].setFillColor(sf::Color(209, 233, 255));
+		bookBtn[i].setOutlineColor(sf::Color(167, 167, 211));
 		bookBtn[i].setOutlineThickness(1);
 		bookBtn[i].setPosition(50, 50 + i * 60);
 	}
@@ -334,7 +334,7 @@ void Library::listBooks() {
 			this_thread::sleep_for(std::chrono::milliseconds(20));
 		}
 		// Render
-		window.clear(sf::Color(200, 200, 200));
+		window.clear(sf::Color(210, 233, 233));
 
 		for (int i = 0; i < 10; i++) {
 			window.draw(bookBtn[i]);
@@ -363,8 +363,8 @@ void Library::listUsers() {
 	sf::RectangleShape userBtn[10];
 	for (int i = 0; i < 10; i++) {
 		userBtn[i].setSize(sf::Vector2f(450, 40));
-		userBtn[i].setFillColor(sf::Color(200, 200, 200));
-		userBtn[i].setOutlineColor(sf::Color::Black);
+		userBtn[i].setFillColor(sf::Color(209, 233, 255));
+		userBtn[i].setOutlineColor(sf::Color(167, 167, 211));
 		userBtn[i].setOutlineThickness(1);
 		userBtn[i].setPosition(50, 50 + i * 40);
 	}
@@ -419,7 +419,7 @@ void Library::listUsers() {
 			}
 			this_thread::sleep_for(std::chrono::milliseconds(30));
 		}
-		window.clear(sf::Color(200, 200, 200));
+		window.clear(sf::Color(210, 233, 233));
 		renderShape(window, { &nextBtn, &prevBtn, &nextBtnText,
 			&prevBtnText, &pageText });
 		for (int i = 0; i < 10; i++) {
@@ -476,7 +476,7 @@ void Library::rearrangeBooks(vector<Book*>& sorted) {
 	sf::RectangleShape submitBox(sf::Vector2f(200, 50));
 	sf::Text submitLabel("Submit", font, 24);
 	initButton(submitBox, submitLabel, 300, 250);
-	submitBox.setFillColor(sf::Color::Green);
+	submitBox.setFillColor(sf::Color(168, 255, 255));
 
 	bool inName = false, inAuthor = false, inCategory = false, isAsc = true;
 	Date filterPublished;
@@ -585,7 +585,7 @@ void Library::rearrangeBooks(vector<Book*>& sorted) {
 			}
 		}
 		// Render
-		window.clear(sf::Color(200, 200, 200));
+		window.clear(sf::Color(210, 233, 233));
 		
 		renderShape(window, { &filterNameBox, &filterNameLabel, &filterNameText,
 			&filterAuthorBox, &filterAuthorLabel, &filterAuthorText,
@@ -648,8 +648,8 @@ void Library::printUser(User& user) {
 	sf::RectangleShape bookBtn[10];
 	for (int i = 0; i < 10; i++) {
 		bookBtn[i].setSize(sf::Vector2f(600, 55));
-		bookBtn[i].setFillColor(sf::Color(200, 200, 200));
-		bookBtn[i].setOutlineColor(sf::Color::Black);
+		bookBtn[i].setFillColor(sf::Color(209, 233, 255));
+		bookBtn[i].setOutlineColor(sf::Color(167, 167, 211));
 		bookBtn[i].setOutlineThickness(1);
 		bookBtn[i].setPosition(25, 50 + i * 55);
 	}
@@ -662,6 +662,7 @@ void Library::printUser(User& user) {
 		returnBtnText[i].setFont(font);
 		returnBtnText[i].setCharacterSize(20);
 		initButton(returnBtn[i], returnBtnText[i], 550, 50 + i * 55);
+		returnBtn[i].setFillColor(sf::Color(197, 226, 226));
 	}
 	// next page
 	sf::RectangleShape nextBtn(sf::Vector2f(100, 70));
@@ -725,13 +726,13 @@ void Library::printUser(User& user) {
 			}
 			this_thread::sleep_for(std::chrono::milliseconds(30));
 		}
-		window.clear(sf::Color(200, 200, 200));
+		window.clear(sf::Color(210, 233, 233));
 		renderShape(window, { &nextBtn, &prevBtn, &nextBtnText,
 			&prevBtnText, &pageText, &instructionText });
 		for (int i = 0; i < 10; i++) {
 			if (i + curPage * 10 < user.borrowing.size()) {
 				window.draw(bookBtn[i]);
-				user.borrowing.at(i + curPage * 10).displayFUser(window, 50, 50 + i * 40);
+				user.borrowing.at(i + curPage * 10).displayFUser(window, 50, 50 + i * 55);
 				window.draw(returnBtn[i]);
 				window.draw(returnBtnText[i]);
 			}

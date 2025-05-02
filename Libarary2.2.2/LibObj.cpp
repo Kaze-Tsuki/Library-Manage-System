@@ -40,8 +40,8 @@ void Date::change_date() {
     initInputBox(inputDay, inputDayText, Daytxt, 550, 50);
 
     sf::RectangleShape submit_btn(sf::Vector2f(100, 50));
-    submit_btn.setFillColor(sf::Color::Green);
-    submit_btn.setOutlineColor(sf::Color::Black);
+    submit_btn.setFillColor(sf::Color(168, 255, 255));
+    submit_btn.setOutlineColor(sf::Color(167, 167, 211));
     submit_btn.setOutlineThickness(2);
     submit_btn.setPosition(350, 110);
 
@@ -109,7 +109,7 @@ void Date::change_date() {
             this_thread::sleep_for(std::chrono::milliseconds(5));
         }
 
-        window.clear(sf::Color(200, 200, 200));
+        window.clear(sf::Color(210, 233, 233));
 
         renderShape(window, { &inputYear, &inputMonth, &inputDay, &submit_btn , &Yeartxt, &Monthtxt, &Daytxt
             , &submit_btn_innerText, &inputDayText, &inputMonthText, &inputYearText });
@@ -251,8 +251,8 @@ void Book::change() {
 
     // Submit
     sf::RectangleShape submit_btn(sf::Vector2f(100, 50));
-    submit_btn.setFillColor(sf::Color::Green);
-    submit_btn.setOutlineColor(sf::Color::Black);
+    submit_btn.setFillColor(sf::Color(168, 255, 255));
+    submit_btn.setOutlineColor(sf::Color(167, 167, 211));
     submit_btn.setOutlineThickness(2);
     submit_btn.setPosition(380, 50);
     sf::Text submit_btn_innerText("Submit", font, 24);
@@ -342,7 +342,7 @@ void Book::change() {
             }
             this_thread::sleep_for(std::chrono::milliseconds(7));
         }
-        window.clear(sf::Color(200, 200, 200));
+        window.clear(sf::Color(210, 233, 233));
 
         renderShape(window, { &inputName, &inputAuthor, &inputISBN, &inputCategory
             , &inputcopyAmount, &Published_btn, &submit_btn , &Nametxt, &Authortxt, &ISBNtxt, &Categorytxt, &copyAmounttxt

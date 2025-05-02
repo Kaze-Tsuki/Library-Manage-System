@@ -11,7 +11,7 @@ sf::Font font;
 
 int main()
 {
-    sf::RenderWindow window(sf::VideoMode(600, 400), "Main Interface");
+    sf::RenderWindow window(sf::VideoMode(350, 350), "Main Interface");
     window.setFramerateLimit(10);
 
     if (!font.loadFromFile("arial.ttf")) { // 記得有字體檔
@@ -55,7 +55,7 @@ int main()
 	Library library;
 	struct inputText inputText;
 
-    window.clear(sf::Color(70, 70, 70));
+    window.clear(sf::Color(235, 235, 255));
 
     renderShape(window, { &AddBook , &AddBookInnerText , &PrintBook , &PrintBookInnerText,
         &ListBooks , &ListBooksInnerText, &ListUsers, &ListUsersInnerText, &Load, &LoadInnerText,
@@ -102,6 +102,10 @@ int main()
 					thread([&library, &inputText]() {
 						string savePath;
 						inputText.OpenInputText(savePath);
+						if (savePath == "") {
+							cout << "Please enter a valid path." << endl;
+							return;
+						}
 						saveLibrary(library, savePath + ".json");
 						}).detach();
                 }
@@ -111,13 +115,17 @@ int main()
 					thread([&library, &inputText]() {
 						string savePath;
 						inputText.OpenInputText(savePath);
+						if (savePath == "") {
+							cout << "Please enter a valid path." << endl;
+							return;
+						}
 						loadLibrary(library, savePath + ".json");
 						}).detach();
 				}
             }
         }
 
-        window.clear(sf::Color(70, 70, 70));
+        window.clear(sf::Color(235, 235, 255));
 
 		renderShape(window, { &AddBook , &AddBookInnerText , &PrintBook , &PrintBookInnerText,
             &ListBooks , &ListBooksInnerText });

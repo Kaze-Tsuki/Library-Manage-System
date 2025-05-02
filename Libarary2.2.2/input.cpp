@@ -19,7 +19,7 @@ void set_mid(sf::RectangleShape& rect, sf::Text& txt)
 void initInputBox(sf::RectangleShape& inputBox, sf::Text& inputText, sf::Text& Label, const size_t& x, const size_t& y)
 {
 	inputBox.setFillColor(sf::Color::White);
-	inputBox.setOutlineColor(sf::Color::Black);
+	inputBox.setOutlineColor(sf::Color(167, 167, 211));
 	inputBox.setOutlineThickness(2);
 	inputBox.setPosition(x, y);
 	Label.setFillColor(sf::Color::Black);
@@ -30,11 +30,11 @@ void initInputBox(sf::RectangleShape& inputBox, sf::Text& inputText, sf::Text& L
 
 void initButton(sf::RectangleShape& btn, sf::Text& txt, const size_t& x, const size_t& y)
 {
-	btn.setFillColor(sf::Color(180, 180, 180));
-	btn.setOutlineColor(sf::Color::Black);
+	btn.setFillColor(sf::Color(255, 229, 204));
+	btn.setOutlineColor(sf::Color(79, 79, 79));
 	btn.setOutlineThickness(1);
 	btn.setPosition(x, y);
-	txt.setFillColor(sf::Color::Black);
+	txt.setFillColor(sf::Color(40, 0, 77));
 	set_mid(btn, txt);
 }
 
@@ -80,7 +80,7 @@ void inputText::OpenInputText(string& s)
     // 輸入框
     sf::RectangleShape inputBox(sf::Vector2f(400, 50));
     inputBox.setFillColor(sf::Color::White);
-    inputBox.setOutlineColor(sf::Color::Black);
+    inputBox.setOutlineColor(sf::Color(167, 167, 211));
     inputBox.setOutlineThickness(2);
     inputBox.setPosition(50, 55);
 
@@ -89,8 +89,8 @@ void inputText::OpenInputText(string& s)
     inputText.setPosition(65, 65);
 
     sf::RectangleShape submit_btn(sf::Vector2f(80, 50));
-    submit_btn.setFillColor(sf::Color::Green);
-    submit_btn.setOutlineColor(sf::Color::Black);
+    submit_btn.setFillColor(sf::Color(168, 255, 255));
+    submit_btn.setOutlineColor(sf::Color(167, 167, 211));
     submit_btn.setOutlineThickness(2);
     submit_btn.setPosition(470, 55);
 
@@ -100,7 +100,7 @@ void inputText::OpenInputText(string& s)
 
     bool isTyping = false;    // 是否正在輸入
     std::string userInput = ""; // 儲存輸入的文字
-    window.clear(sf::Color(200, 200, 200));
+    window.clear(sf::Color(244, 255, 229));
     renderShape(window, { &submit_btn , &submit_btn_innerText, &inputBox , &inputText });
 
     window.display();
@@ -136,7 +136,7 @@ void inputText::OpenInputText(string& s)
             if (isTyping && event.type == sf::Event::TextEntered) {
 				inputEvent(event, userInput, ' ', '~', 20); // 限制輸入範圍和長度
 				inputText.setString(userInput); // 更新畫面上的文字
-                window.clear(sf::Color(200, 200, 200));
+                window.clear(sf::Color(244, 255, 229));
 
                 renderShape(window, { &submit_btn , &submit_btn_innerText, &inputBox , &inputText });
 
