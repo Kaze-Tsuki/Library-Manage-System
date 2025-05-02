@@ -3,6 +3,7 @@
 #include "Library.h"
 #include <thread>
 #include <iostream>
+#include "FileIO.h"
 
 using namespace std;
 
@@ -39,15 +40,26 @@ int main()
 	sf::Text ListUsersInnerText("List Users", font, 20);
 	initButton(ListUsers, ListUsersInnerText, 30, 240);
 
+    // Save
+	sf::RectangleShape Save(sf::Vector2f(100, 50));
+	sf::Text SaveInnerText("Save", font, 20);
+	initButton(Save, SaveInnerText, 200, 30);
+
+	// Load
+	sf::RectangleShape Load(sf::Vector2f(100, 50));
+	sf::Text LoadInnerText("Load", font, 20);
+	initButton(Load, LoadInnerText, 200, 100);
 
 
     std::string userInput = ""; // 儲存輸入的文字
 	Library library;
+	struct inputText inputText;
 
     window.clear(sf::Color(70, 70, 70));
 
     renderShape(window, { &AddBook , &AddBookInnerText , &PrintBook , &PrintBookInnerText,
-        &ListBooks , &ListBooksInnerText, &ListUsers, &ListUsersInnerText });
+        &ListBooks , &ListBooksInnerText, &ListUsers, &ListUsersInnerText, &Load, &LoadInnerText,
+		&Save, &SaveInnerText });
 
     window.display();
 
@@ -83,6 +95,24 @@ int main()
 					// List users
 					cout << "List Users" << endl;
 					thread(&Library::listUsers, &library).detach();
+				}
+                else if (Save.getGlobalBounds().contains(mousePos)) {
+                    // Save library
+                    cout << "Save Library" << endl;
+					thread([&library, &inputText]() {
+						string savePath;
+						inputText.OpenInputText(savePath);
+						saveLibrary(library, savePath + ".json");
+						}).detach();
+                }
+				else if (Load.getGlobalBounds().contains(mousePos)) {
+					// Load library
+					cout << "Load Library" << endl;
+					thread([&library, &inputText]() {
+						string savePath;
+						inputText.OpenInputText(savePath);
+						loadLibrary(library, savePath + ".json");
+						}).detach();
 				}
             }
         }

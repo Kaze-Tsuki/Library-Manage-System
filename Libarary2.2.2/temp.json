@@ -1,0 +1,147 @@
+{
+    "books": [
+        {
+            "ISBN": "1",
+            "author": "a",
+            "availableCopies": 0,
+            "category": "a",
+            "copyAmount": 1,
+            "due": [
+                2020,
+                1,
+                1
+            ],
+            "name": "a",
+            "published": [
+                2020,
+                1,
+                1
+            ]
+        },
+        {
+            "ISBN": "2",
+            "author": "b",
+            "availableCopies": 0,
+            "category": "b",
+            "copyAmount": 1,
+            "due": [
+                2020,
+                1,
+                1
+            ],
+            "name": "b",
+            "published": [
+                2020,
+                1,
+                1
+            ]
+        },
+        {
+            "ISBN": "3",
+            "author": "a",
+            "availableCopies": 1,
+            "category": "b",
+            "copyAmount": 1,
+            "due": [
+                2020,
+                1,
+                1
+            ],
+            "name": "c",
+            "published": [
+                2026,
+                12,
+                1
+            ]
+        },
+        {
+            "ISBN": "9789571374",
+            "author": "haruki",
+            "availableCopies": 3,
+            "category": "Humanities",
+            "copyAmount": 3,
+            "due": [
+                2020,
+                1,
+                1
+            ],
+            "name": "meet 100% girl",
+            "published": [
+                2018,
+                7,
+                31
+            ]
+        }
+    ],
+    "users": [
+        {
+            "borrowing": [
+                {
+                    "ISBN": "1",
+                    "author": "a",
+                    "availableCopies": 0,
+                    "category": "a",
+                    "copyAmount": 1,
+                    "due": [
+                        2020,
+                        1,
+                        1
+                    ],
+                    "name": "a",
+                    "published": [
+                        2020,
+                        1,
+                        1
+                    ]
+                }
+            ],
+            "name": "sean"
+        },
+        {
+            "borrowing": [
+                {
+                    "ISBN": "2",
+                    "author": "b",
+                    "availableCopies": 0,
+                    "category": "b",
+                    "copyAmount": 1,
+                    "due": [
+                        2020,
+                        1,
+                        1
+                    ],
+                    "name": "b",
+                    "published": [
+                        2020,
+                        1,
+                        1
+                    ]
+                }
+            ],
+            "name": "Ame"
+        },
+        {
+            "borrowing": [
+                {
+                    "ISBN": "9789571374",
+                    "author": "haruki",
+                    "availableCopies": 3,
+                    "category": "Humanities",
+                    "copyAmount": 3,
+                    "due": [
+                        2020,
+                        1,
+                        1
+                    ],
+                    "name": "meet 100% girl",
+                    "published": [
+                        2018,
+                        7,
+                        31
+                    ]
+                }
+            ],
+            "name": ""
+        }
+    ]
+}

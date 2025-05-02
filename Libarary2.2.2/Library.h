@@ -50,6 +50,7 @@ typedef struct User {
 	string name;
 	vector<Book> borrowing;
 	User(string& name);
+	User();
 	void displayBrief(sf::RenderWindow& window, int x, int y);
 	void borrow();
 	void giveBack();
@@ -61,9 +62,10 @@ private:
 	vector<Book*> books;
 	vector<User> users;
 public:
-	const vector<Book*> getBooks() const { return books; }
-	const vector<User> getUsers() const { return users; }
+	vector<Book*> getBooks() { return books; }
+	vector<User> getUsers() { return users; }
 	void addBook(Book* book);
+	void addUser(const User& user);
 	void borrowBook(Book* book);// use a new window
 	void giveBackBook(Book* book); // use a new window
 	void printBooks(const size_t& start); // use a new window

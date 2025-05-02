@@ -1,0 +1,129 @@
+{
+    "books": [
+        {
+            "ISBN": "1",
+            "author": "a",
+            "availableCopies": 2,
+            "category": "a",
+            "copyAmount": 3,
+            "due": [
+                2020,
+                1,
+                1
+            ],
+            "name": "a",
+            "published": [
+                2020,
+                1,
+                1
+            ]
+        },
+        {
+            "ISBN": "937958",
+            "author": "haruki",
+            "availableCopies": 4,
+            "category": "Humanity",
+            "copyAmount": 5,
+            "due": [
+                2020,
+                1,
+                1
+            ],
+            "name": "meet 100% girl",
+            "published": [
+                2018,
+                5,
+                7
+            ]
+        },
+        {
+            "ISBN": "423543",
+            "author": "hgtfhfg",
+            "availableCopies": 0,
+            "category": "gfdgdr",
+            "copyAmount": 1,
+            "due": [
+                2020,
+                1,
+                1
+            ],
+            "name": "fdfsf",
+            "published": [
+                2029,
+                1,
+                1
+            ]
+        }
+    ],
+    "users": [
+        {
+            "borrowing": [
+                {
+                    "ISBN": "937958",
+                    "author": "haruki",
+                    "availableCopies": 4,
+                    "category": "Humanity",
+                    "copyAmount": 5,
+                    "due": [
+                        2020,
+                        1,
+                        1
+                    ],
+                    "name": "meet 100% girl",
+                    "published": [
+                        2018,
+                        5,
+                        7
+                    ]
+                }
+            ],
+            "name": "s"
+        },
+        {
+            "borrowing": [
+                {
+                    "ISBN": "1",
+                    "author": "a",
+                    "availableCopies": 2,
+                    "category": "a",
+                    "copyAmount": 3,
+                    "due": [
+                        2020,
+                        1,
+                        1
+                    ],
+                    "name": "a",
+                    "published": [
+                        2020,
+                        1,
+                        1
+                    ]
+                }
+            ],
+            "name": "ame"
+        },
+        {
+            "borrowing": [
+                {
+                    "ISBN": "423543",
+                    "author": "hgtfhfg",
+                    "availableCopies": 0,
+                    "category": "gfdgdr",
+                    "copyAmount": 1,
+                    "due": [
+                        2020,
+                        1,
+                        1
+                    ],
+                    "name": "fdfsf",
+                    "published": [
+                        2029,
+                        1,
+                        1
+                    ]
+                }
+            ],
+            "name": "gura"
+        }
+    ]
+}

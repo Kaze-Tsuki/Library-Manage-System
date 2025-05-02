@@ -13,6 +13,28 @@ void msort(RandomIt first, RandomIt last, Compare comp) {
     }
 }
 
+template <typename Iterator, typename Func>
+void my_for_each(Iterator begin, Iterator end, Func f) {
+    for (auto it = begin; it != end; ++it) {
+        f(*it);
+    }
+}
+
+template <typename Iterator, typename Predicate>
+Iterator my_find_if(Iterator begin, Iterator end, Predicate pred) {
+    for (auto it = begin; it != end; ++it) {
+        if (pred(*it)) return it;
+    }
+    return end;
+}
+
+template <typename Iterator, typename T>
+Iterator my_find(Iterator begin, Iterator end, const T& value) {
+    for (auto it = begin; it != end; ++it) {
+        if (*it == value) return it;
+    }
+    return end;
+}
 
 #endif // !mysort
 

@@ -148,6 +148,9 @@ bool Date::operator>(const Date& other) {
 }
 
 User::User(string& name) : name(name) {}
+User::User() {
+	name = "";
+}
 
 void User::displayBrief(sf::RenderWindow& window, int x, int y) {
 	sf::Text nameText(name, font, 20);

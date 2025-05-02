@@ -28,6 +28,16 @@ void Library::addBook(Book* book) {
    books.push_back(book);
 }
 
+void Library::addUser(const User& user) {
+	for (const auto& u : users) {
+		if (u.name == user.name) {
+			cout << "User already exists.\n";
+			return;
+		}
+	}
+	users.push_back(user);
+}
+
 void Library::borrowBook(Book* book) {
 	if (book->changing.exchange(true)) {
 		cout << "System Busy...\n";
@@ -104,7 +114,7 @@ void Library::borrowBook(Book* book) {
 
 	// Find user
 	User user(username);
-	auto it = find_if(users.begin(), users.end(), [&](User& u) {
+	auto it = my_find_if(users.begin(), users.end(), [&](User& u) {
 		return u.name == user.name;
 		});
 	if (it != users.end()) {
@@ -126,12 +136,12 @@ void Library::giveBackBook(Book* book) {
 	struct inputText input;
 	string username; input.OpenInputText(username);
 	// Find user
-	auto it = find_if(users.begin(), users.end(), [&](User& u) {
+	auto it = my_find_if(users.begin(), users.end(), [&](User& u) {
 		return u.name == username;
 		});
 	if (it != users.end()) {
 		// User exists
-		auto bookIt = find(it->borrowing.begin(), it->borrowing.end(), *book);
+		auto bookIt = my_find(it->borrowing.begin(), it->borrowing.end(), *book);
 		if (bookIt != it->borrowing.end()) {
 			it->borrowing.erase(bookIt);
 			book->availableCopies++;
@@ -313,7 +323,7 @@ void Library::listBooks() {
 					for (int i = 0; i < 10; i++) {
 						if (i + curPage * 10 < present.size() && bookBtn[i].getGlobalBounds().contains(mousePos)) {
 							// find the book index in the books vector
-							size_t bookIndex = find_if(books.begin(), books.end(), [&](Book* b) {
+							size_t bookIndex = my_find_if(books.begin(), books.end(), [&](Book* b) {
 								return b == present.at(i + curPage * 10);
 								}) - books.begin();
 							thread(&Library::printBooks, this, bookIndex).detach();
@@ -599,11 +609,11 @@ void Library::rearrangeBooks(vector<Book*>& sorted) {
 	sorted.erase(std::remove_if(sorted.begin(), sorted.end(),
 		[&](Book* b) { return b->name != filterName; }),
 		sorted.end());
-	if (togglePusblished == 1) // find larger
+	if (togglePusblished == 1) // my_find larger
 		sorted.erase(std::remove_if(sorted.begin(), sorted.end(),
 			[&](Book* b) { return b->published < filterPublished; }),
 			sorted.end());
-	else if (togglePusblished == 2) // find smaller
+	else if (togglePusblished == 2) // my_find smaller
 	sorted.erase(std::remove_if(sorted.begin(), sorted.end(),
 		[&](Book* b) { return b->published > filterPublished; }),
 		sorted.end());
@@ -702,8 +712,8 @@ void Library::printUser(User& user) {
 				else {
 					for (int i = 0; i < 10; i++) {
 						if (i + curPage * 10 < user.borrowing.size() && returnBtn[i].getGlobalBounds().contains(mousePos)) {
-							// find the book index in the books vector and return the book
-							size_t bookIndex = find_if(books.begin(), books.end(), [&](Book* b) {
+							// my_find the book index in the books vector and return the book
+							size_t bookIndex = my_find_if(books.begin(), books.end(), [&](Book* b) {
 								return *b == user.borrowing.at(i + curPage * 10);
 								}) - books.begin();
 							books[bookIndex]->availableCopies++;
