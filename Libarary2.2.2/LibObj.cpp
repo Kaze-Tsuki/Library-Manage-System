@@ -120,12 +120,12 @@ void Date::change_date() {
     return;
 }
 
-string Date::getString() {
+string Date::getString() const{
     string s = to_string(year) + "-" + to_string(month) + "-" + to_string(day);
     return s;
 }
 
-void Date::print_date() {
+void Date::print_date() const{
     cout << year << "-" << month << "-" << day << endl;
 }
 
@@ -133,6 +133,18 @@ void Date::operator=(const Date& other) {
     year = other.year;
     month = other.month;
     day = other.day;
+}
+
+bool Date::operator<(const Date& other) {
+	if (year != other.year) return year < other.year;
+	if (month != other.month) return month < other.month;
+	return day < other.day;
+}
+
+bool Date::operator>(const Date& other) {
+	if (year != other.year) return year > other.year;
+	if (month != other.month) return month > other.month;
+	return day > other.day;
 }
 
 User::User(string& name) : name(name) {}
@@ -376,12 +388,13 @@ void Book::displayBrief(sf::RenderWindow& window, int x, int y) {
 	sf::Text CategoryText("Category: " + category, font, 20);
 	CategoryText.setFillColor(sf::Color::Black);
 	CategoryText.setPosition(x + 370, y+5);
-	window.draw(nameText);
+	sf::Text dateText("Published: " + published.getString(), font, 20);
+	dateText.setFillColor(sf::Color::Black);
+	dateText.setPosition(x + 370, y + 30);
 	sf::Text copyAmountText("Available: " + to_string(availableCopies)
-		+ '/' + to_string(copyAmount), font, 18);
+		+ '/' + to_string(copyAmount), font, 20);
 	copyAmountText.setFillColor(sf::Color::Black);
-	copyAmountText.setPosition(x + 730, y+30);
-	renderShape(window, { &nameText, &authorText, &CategoryText, &copyAmountText });
+	copyAmountText.setPosition(x + 650, y+30);
+	renderShape(window, { &nameText, &authorText, &CategoryText, &copyAmountText, &dateText });
 	
 }
-

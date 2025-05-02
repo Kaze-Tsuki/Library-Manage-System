@@ -4,6 +4,7 @@
 #include <vector>
 #include <SFML/Graphics.hpp>
 #include <exception>
+#include "sort.h"
 
 using namespace std;
 
@@ -122,7 +123,27 @@ void Library::borrowBook(Book* book) {
 
 void Library::giveBackBook(Book* book) {
 	// Must exists
-	// ...
+	// Input username
+	string username; OpenInputText(username);
+	// Find user
+	auto it = find_if(users.begin(), users.end(), [&](User& u) {
+		return u.name == username;
+		});
+	if (it != users.end()) {
+		// User exists
+		auto bookIt = find(it->borrowing.begin(), it->borrowing.end(), book);
+		if (bookIt != it->borrowing.end()) {
+			it->borrowing.erase(bookIt);
+			book->availableCopies++;
+			cout << "Book returned successfully." << endl;
+		}
+		else {
+			cout << "User does not have this book." << endl;
+		}
+	}
+	else {
+		cout << "User does not exist." << endl;
+	}
 }
 
 void Library::printBooks(const size_t& start){
@@ -194,7 +215,7 @@ void Library::printBooks(const size_t& start){
 				}
 				else if (giveBackBtn.getGlobalBounds().contains(mousePos)) {
 					// give back
-					// ...
+					giveBackBook(books[curBook]);
 				}
 			}
 			this_thread::sleep_for(std::chrono::milliseconds(30));
@@ -213,7 +234,7 @@ void Library::listBooks() {
 	// bottom side two buttons to go to next page and prev page
 
 	sf::RenderWindow window(sf::VideoMode(950, 820), "Books");
-	window.setFramerateLimit(30);
+	window.setFramerateLimit(15);
 
 	// button[10]
 	sf::RectangleShape bookBtn[10];
@@ -233,6 +254,11 @@ void Library::listBooks() {
 	sf::RectangleShape prevBtn(sf::Vector2f(100, 70));
 	sf::Text prevBtnText("Prev", font, 20);
 	initButton(prevBtn, prevBtnText, 200, 730);
+	// change filter condition
+	sf::RectangleShape filterBtn(sf::Vector2f(100, 70));
+	sf::Text filterBtnText("Filter", font, 20);
+	initButton(filterBtn, filterBtnText, 50, 730);
+
 	// Display page
 	sf::Text pageText(to_string(1) + "/" + to_string((books.size() + 9) / 10), font, 18);
 	pageText.setFillColor(sf::Color::Black);
@@ -243,7 +269,8 @@ void Library::listBooks() {
 
 
 	// Display books
-	size_t curPage = 0;
+	atomic<size_t> curPage = 0;
+	vector<Book*> present = books;
 
 	while (window.isOpen())
 	{
@@ -258,42 +285,59 @@ void Library::listBooks() {
 			{
 				sf::Vector2f mousePos(event.mouseButton.x, event.mouseButton.y);
 				if (nextBtn.getGlobalBounds().contains(mousePos)) {
-					if ((curPage+1) * 10 < books.size()) {
+					if ((curPage+1) * 10 < present.size()) {
 						curPage++;
-						pageText.setString(to_string(curPage + 1) + "/" + to_string((books.size() + 9) / 10));
+						pageText.setString(to_string(curPage + 1) + "/" + to_string((present.size() + 9) / 10));
 					}
 				}
 				else if (prevBtn.getGlobalBounds().contains(mousePos)) {
 					if (curPage > 0) {
 						curPage--;
-						pageText.setString(to_string(curPage + 1) + "/" + to_string((books.size() + 9) / 10));
+						pageText.setString(to_string(curPage + 1) + "/" + to_string((present.size() + 9) / 10));
 					}
+				}
+				else if (filterBtn.getGlobalBounds().contains(mousePos)) {
+					// filter
+					thread([&]() {
+						// filter books
+						present.clear();
+						present = books;
+						rearrangeBooks(present);
+						curPage = 0;
+						// update page text
+						pageText.setString(to_string(curPage + 1) + "/" + to_string((present.size() + 9) / 10));
+					}).detach();
+					
 				}
 				else {
 					for (int i = 0; i < 10; i++) {
-						if (bookBtn[i].getGlobalBounds().contains(mousePos)) {
-							thread(&Library::printBooks, this, i + curPage * 10).detach();
+						if (i + curPage * 10 < present.size() && bookBtn[i].getGlobalBounds().contains(mousePos)) {
+							// find the book index in the books vector
+							size_t bookIndex = find_if(books.begin(), books.end(), [&](Book* b) {
+								return b == present.at(i + curPage * 10);
+								}) - books.begin();
+							thread(&Library::printBooks, this, bookIndex).detach();
 						}
 					}
 				}
 			}
-			this_thread::sleep_for(std::chrono::milliseconds(30));
+			this_thread::sleep_for(std::chrono::milliseconds(20));
 		}
 		// Render
 		window.clear(sf::Color(200, 200, 200));
 
 		for (int i = 0; i < 10; i++) {
 			window.draw(bookBtn[i]);
-			if (i + curPage * 10 < books.size())
+			if (i + curPage * 10 < present.size())
 			try {
-				books.at(i + curPage * 10)->displayBrief(window, 50, 50 + i * 60);
+				present.at(i + curPage * 10)->displayBrief(window, 50, 50 + i * 60);
 			}
 			catch (const std::out_of_range& e) {
 				// 如果越界可以跳過或記錄錯誤
 				std::cerr << "Conflict of multi tasking: " << e.what() << std::endl;
 			}
 		}
-		renderShape(window, { &nextBtn, &prevBtn,
+		renderShape(window, { &nextBtn, &prevBtn, &filterBtn, &filterBtnText,
 			&nextBtnText, &prevBtnText, &pageText });
 
 		window.display();
@@ -306,9 +350,211 @@ void Library::printUsers() {
 	// ...
 }
 
-void Library::rearrangeBooks() {
+void Library::rearrangeBooks(vector<Book*>& sorted) {
 	// using a new window
-	// ...
+	// left filter attributes , right toggle button for all sorting attributes & asc/desc
+	sf::RenderWindow window(sf::VideoMode(800, 450), "Rearrange Books");
+	window.setFramerateLimit(20);
+	// filter
+	sf::RectangleShape filterNameBox(sf::Vector2f(200, 50));
+	sf::Text filterNameLabel("Name", font, 20);
+	sf::Text filterNameText("Name", font, 24);
+	initInputBox(filterNameBox, filterNameText, filterNameLabel, 50, 50);
+	// filter author
+	sf::RectangleShape filterAuthorBox(sf::Vector2f(200, 50));
+	sf::Text filterAuthorLabel("Author", font, 20);
+	sf::Text filterAuthorText("Author", font, 24);
+	initInputBox(filterAuthorBox, filterAuthorText, filterAuthorLabel, 50, 150);
+	// filter category
+	sf::RectangleShape filterCategoryBox(sf::Vector2f(200, 50));
+	sf::Text filterCategoryLabel("Category", font, 20);
+	sf::Text filterCategoryText("Category", font, 24);
+	initInputBox(filterCategoryBox, filterCategoryText, filterCategoryLabel, 50, 250);
+	// filter published (button)
+	sf::RectangleShape filterPublishedBox(sf::Vector2f(200, 50));
+	sf::Text filterPublishedLabel("Published", font, 20);
+	initButton(filterPublishedBox, filterPublishedLabel, 50, 350);
+	sf::Text filterPublishedDisplay("2020-1-1", font, 24);
+	filterPublishedDisplay.setFillColor(sf::Color::Black);
+	filterPublishedDisplay.setPosition(50, 400);
+	// toggle published
+	sf::RectangleShape GoFilterPublished(sf::Vector2f(80, 50));
+	sf::Text GoFilterPublishedLabel("Nah", font, 24);
+	initButton(GoFilterPublished, GoFilterPublishedLabel, 300, 350);
+	// sort by(button)
+	sf::RectangleShape sortBox(sf::Vector2f(200, 50));
+	sf::Text sortLabel("Sort By", font, 20);
+	initButton(sortBox, sortLabel, 300, 50);
+	// asc/desc
+	sf::RectangleShape ascBox(sf::Vector2f(200, 50));
+	sf::Text ascLabel("Asc", font, 20);
+	initButton(ascBox, ascLabel, 300, 150);
+	// submit
+	sf::RectangleShape submitBox(sf::Vector2f(200, 50));
+	sf::Text submitLabel("Submit", font, 24);
+	initButton(submitBox, submitLabel, 300, 250);
+	submitBox.setFillColor(sf::Color::Green);
+
+	bool inName = false, inAuthor = false, inCategory = false, isAsc = true;
+	Date filterPublished;
+	size_t sortIndex = 0, togglePusblished = 0;
+	const vector<string> sortBy = { "Name", "Author", "Published", "Category" };
+	string filterName, filterAuthor, filterCategory;
+
+	while (window.isOpen())
+	{
+		sf::Event event;
+		while (window.pollEvent(event))
+		{
+			if (event.type == sf::Event::Closed) {
+				window.close();
+				return;
+			}
+			else if (event.type == sf::Event::MouseButtonPressed &&
+				event.mouseButton.button == sf::Mouse::Left)
+			{
+				sf::Vector2f mousePos(event.mouseButton.x, event.mouseButton.y);
+				if (filterNameBox.getGlobalBounds().contains(mousePos)) {
+					inName = true;
+					inAuthor = false;
+					inCategory = false;
+				}
+				else if (filterAuthorBox.getGlobalBounds().contains(mousePos)) {
+					inName = false;
+					inAuthor = true;
+					inCategory = false;
+				}
+				else if (filterCategoryBox.getGlobalBounds().contains(mousePos)) {
+					inName = false;
+					inAuthor = false;
+					inCategory = true;
+				}
+				else if (submitBox.getGlobalBounds().contains(mousePos)) {
+					if (filterPublished.changing.load()) {
+						cout << "Date Input Still Open\n"; continue;
+					}
+					window.close();
+				}
+				else if (filterPublishedBox.getGlobalBounds().contains(mousePos)) {
+					inName = false;
+					inAuthor = false;
+					inCategory = false;
+					thread([&]() {
+						filterPublished.change_date();
+						filterPublishedDisplay.setString(filterPublished.getString());
+					}).detach();
+				}
+				else if (sortBox.getGlobalBounds().contains(mousePos)) {
+					// sort
+					sortIndex++;
+					if (sortIndex >= sortBy.size()) {
+						sortIndex = 0;
+					}
+					sortLabel.setString(sortBy[sortIndex]);
+				}
+				else if (ascBox.getGlobalBounds().contains(mousePos)) {
+					// asc/desc
+					if (isAsc) {
+						isAsc = false;
+						ascLabel.setString("Desc");
+					}
+					else {
+						isAsc = true;
+						ascLabel.setString("Asc");
+					}
+				}
+				else if (GoFilterPublished.getGlobalBounds().contains(mousePos)) {
+					// filter published
+					togglePusblished++;
+					togglePusblished %= 3;
+					switch (togglePusblished)
+					{
+					case 0:
+						GoFilterPublishedLabel.setString("Nah");
+						break;
+					case 1:
+						GoFilterPublishedLabel.setString(">=");
+						break;
+					case 2:
+						GoFilterPublishedLabel.setString("<=");
+						break;
+					default:
+						break;
+					}
+				}
+				else {
+					inName = false;
+					inAuthor = false;
+					inCategory = false;
+				}
+			}
+			if (inName) {
+				inputEvent(event, filterName, 'A', 'z', 20);
+				filterNameText.setString(filterName); // 更新畫面上的文字
+			}
+			else if (inAuthor) {
+				inputEvent(event, filterAuthor, 'A', 'z', 20);
+				filterAuthorText.setString(filterAuthor); // 更新畫面上的文字
+			}
+			else if (inCategory) {
+				inputEvent(event, filterCategory, 'A', 'z', 20);
+				filterCategoryText.setString(filterCategory); // 更新畫面上的文字
+			}
+		}
+		// Render
+		window.clear(sf::Color(200, 200, 200));
+		
+		renderShape(window, { &filterNameBox, &filterNameLabel, &filterNameText,
+			&filterAuthorBox, &filterAuthorLabel, &filterAuthorText,
+			&filterCategoryBox, &filterCategoryLabel, &filterCategoryText,
+			&filterPublishedBox, &filterPublishedLabel, &filterPublishedDisplay,
+			&sortBox, &sortLabel,
+			&ascBox, &ascLabel,
+			&submitBox, &submitLabel, & GoFilterPublished, &GoFilterPublishedLabel });
+		window.display();
+	}
+	// start filtering and sorting
+	if (filterCategory != "")
+	sorted.erase(std::remove_if(sorted.begin(), sorted.end(),
+		[&](Book* b) { return b->category != filterCategory; }),
+		sorted.end());
+	if (filterAuthor != "")
+	sorted.erase(std::remove_if(sorted.begin(), sorted.end(),
+		[&](Book* b) { return b->author != filterAuthor; }),
+		sorted.end());
+	if (filterName != "")
+	sorted.erase(std::remove_if(sorted.begin(), sorted.end(),
+		[&](Book* b) { return b->name != filterName; }),
+		sorted.end());
+	if (togglePusblished == 1) // find larger
+		sorted.erase(std::remove_if(sorted.begin(), sorted.end(),
+			[&](Book* b) { return b->published < filterPublished; }),
+			sorted.end());
+	else if (togglePusblished == 2) // find smaller
+	sorted.erase(std::remove_if(sorted.begin(), sorted.end(),
+		[&](Book* b) { return b->published > filterPublished; }),
+		sorted.end());
+	if (sortIndex == 0) {
+		msort(sorted.begin(), sorted.end(), [&](Book* a, Book* b) {
+			return isAsc ? a->name < b->name : a->name > b->name;
+			});
+	}
+	else if (sortIndex == 1) {
+		msort(sorted.begin(), sorted.end(), [&](Book* a, Book* b) {
+			return isAsc ? a->author < b->author : a->author > b->author;
+			});
+	}
+	else if (sortIndex == 2) {
+		msort(sorted.begin(), sorted.end(), [&](Book* a, Book* b) {
+			return isAsc ? a->published < b->published : a->published > b->published;
+			});
+	}
+	else if (sortIndex == 3) {
+		msort(sorted.begin(), sorted.end(), [&](Book* a, Book* b) {
+			return isAsc ? a->category < b->category : a->category > b->category;
+			});
+	}
+	return;
 }
 
 Library::~Library() {

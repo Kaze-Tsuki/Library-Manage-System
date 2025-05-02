@@ -25,5 +25,6 @@ extern void inputEvent(sf::Event& event, string& s, const char& cmin, const char
 
 extern void renderShape(sf::RenderWindow& window, const vector<sf::Drawable*> drawables);
 
+extern string getClipboardText();
 
 #endif

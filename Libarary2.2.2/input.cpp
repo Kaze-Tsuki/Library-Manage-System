@@ -2,6 +2,7 @@
 #include <iostream>
 #include "input.h"
 #include <thread>
+#include <Windows.h>
 
 using namespace std;
 
@@ -54,6 +55,12 @@ void inputEvent(sf::Event& event, string& s, const char& cmin, const char& cmax,
 				s.pop_back();
 			}
 		}
+		else if (event.text.unicode == 22) { // Ctrl + V
+			s += getClipboardText();
+			if (s.size() > length) {
+				s = s.substr(0, length); // 限制輸入長度
+			}
+		}
 		else if (event.text.unicode >= cmin && event.text.unicode <= cmax) { // 處理英文字元
 			s += static_cast<char>(event.text.unicode);
 			if (s.size() > length) {
@@ -70,7 +77,7 @@ void OpenInputText(string& s)
 		return;
     }
     sf::RenderWindow window(sf::VideoMode(600, 130), "Text Input");
-    window.setFramerateLimit(30);
+    window.setFramerateLimit(20);
 
     // 輸入框
     sf::RectangleShape inputBox(sf::Vector2f(400, 50));
@@ -138,4 +145,25 @@ void OpenInputText(string& s)
     }
     runningInputText.store(false); // 關閉 flag
     return;
+}
+
+string getClipboardText() {
+    if (!OpenClipboard(nullptr)) return "";
+    HANDLE hData = GetClipboardData(CF_TEXT);  // 也可以用 CF_UNICODETEXT 配合 wstring
+    if (hData == nullptr) {
+        CloseClipboard();
+        return "";
+    }
+
+    char* pszText = static_cast<char*>(GlobalLock(hData));
+    if (pszText == nullptr) {
+        GlobalUnlock(hData);
+        CloseClipboard();
+        return "";
+    }
+
+    std::string text(pszText);
+    GlobalUnlock(hData);
+    CloseClipboard();
+    return text;
 }

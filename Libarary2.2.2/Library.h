@@ -7,6 +7,7 @@
 #include <iostream>
 #include <vector>
 #include <atomic>
+#include <Windows.h>
 
 using namespace std;
 
@@ -16,9 +17,11 @@ typedef struct Date {
 	Date();
 	Date(int y, int m, int d);
 	void change_date();
-	void print_date();
-	string getString();
+	void print_date() const;
+	string getString() const;
 	void operator=(const Date& other);
+	bool operator<(const Date& other);
+	bool operator>(const Date& other);
 }Date;
 
 class Book {
@@ -60,7 +63,7 @@ public:
 	void giveBackBook(Book* book); // use a new window
 	void printBooks(const size_t& start); // use a new window
 	void printUsers(); // use a new window
-	void rearrangeBooks(); // use a new window
+	void rearrangeBooks(vector<Book*>&); // use a new window
 	void listBooks(); // use a new window
 	~Library();
 };
