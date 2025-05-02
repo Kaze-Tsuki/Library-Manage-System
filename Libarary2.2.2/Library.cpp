@@ -12,6 +12,7 @@ void Library::addBook(Book* book) {
     // Check if the book is valid
    if (!book->valid()) {
        cout << "Book is not valid." << endl;
+	   delete book; // Free the memory allocated for the book
        return;
    }
 
@@ -108,13 +109,12 @@ void Library::borrowBook(Book* book) {
 		});
 	if (it != users.end()) {
 		// User exists
-		it->borrowing.push_back(book);
-		it->borrowing.back()->due = due;
-		it->borrowing.back()->changing.store(false);
+		it->borrowing.emplace_back(*book);
+		it->borrowing.back().due = due;
 	}
 	else {
 		// User does not exist
-		user.borrowing.push_back(book);
+		user.borrowing.emplace_back(*book);
 		users.push_back(user);
 	}
 	book->changing.store(false);
@@ -122,16 +122,16 @@ void Library::borrowBook(Book* book) {
 }
 
 void Library::giveBackBook(Book* book) {
-	// Must exists
 	// Input username
-	string username; OpenInputText(username);
+	struct inputText input;
+	string username; input.OpenInputText(username);
 	// Find user
 	auto it = find_if(users.begin(), users.end(), [&](User& u) {
 		return u.name == username;
 		});
 	if (it != users.end()) {
 		// User exists
-		auto bookIt = find(it->borrowing.begin(), it->borrowing.end(), book);
+		auto bookIt = find(it->borrowing.begin(), it->borrowing.end(), *book);
 		if (bookIt != it->borrowing.end()) {
 			it->borrowing.erase(bookIt);
 			book->availableCopies++;
@@ -344,10 +344,83 @@ void Library::listBooks() {
 	}
 }
 
-void Library::printUsers() {
+void Library::listUsers() {
 	// using a new window
-	
-	// ...
+	sf::RenderWindow window(sf::VideoMode(550, 600), "Users");
+	window.setFramerateLimit(20);
+	// A list of users with their borrowed books amount
+	// 10 users one page, next page and prev page, user div is a btn
+	sf::RectangleShape userBtn[10];
+	for (int i = 0; i < 10; i++) {
+		userBtn[i].setSize(sf::Vector2f(450, 40));
+		userBtn[i].setFillColor(sf::Color(200, 200, 200));
+		userBtn[i].setOutlineColor(sf::Color::Black);
+		userBtn[i].setOutlineThickness(1);
+		userBtn[i].setPosition(50, 50 + i * 40);
+	}
+	// next page
+	sf::RectangleShape nextBtn(sf::Vector2f(100, 70));
+	sf::Text nextBtnText("Next", font, 20);
+	initButton(nextBtn, nextBtnText, 350, 480);
+	// prev
+	sf::RectangleShape prevBtn(sf::Vector2f(100, 70));
+	sf::Text prevBtnText("Prev", font, 20);
+	initButton(prevBtn, prevBtnText, 100, 480);
+
+	// Display page
+	sf::Text pageText(to_string(1) + "/" + to_string((users.size() + 9) / 10), font, 18);
+	pageText.setFillColor(sf::Color::Black);
+	sf::FloatRect textBounds = pageText.getLocalBounds();
+	pageText.setOrigin(textBounds.left + textBounds.width / 2.0f,
+		textBounds.top + textBounds.height / 2.0f);
+	pageText.setPosition(275, 500);
+	// Display users
+	size_t curPage = 0;
+	while (window.isOpen())
+	{
+		sf::Event event;
+		while (window.pollEvent(event))
+		{
+			if (event.type == sf::Event::Closed)
+				window.close();
+			// ·Æ¹«ÂIÀ»¿é¤J®Ø
+			if (event.type == sf::Event::MouseButtonPressed &&
+				event.mouseButton.button == sf::Mouse::Left)
+			{
+				sf::Vector2f mousePos(event.mouseButton.x, event.mouseButton.y);
+				if (nextBtn.getGlobalBounds().contains(mousePos)) {
+					if ((curPage + 1) * 10 < users.size()) {
+						curPage++;
+						pageText.setString(to_string(curPage + 1) + "/" + to_string((users.size() + 9) / 10));
+					}
+				}
+				else if (prevBtn.getGlobalBounds().contains(mousePos)) {
+					if (curPage > 0) {
+						curPage--;
+						pageText.setString(to_string(curPage + 1) + "/" + to_string((users.size() + 9) / 10));
+					}
+				}
+				for (int i = 0; i < 10; i++) {
+					if (i + curPage * 10 < users.size() && userBtn[i].getGlobalBounds().contains(mousePos)) {
+						// printuser
+						thread(&Library::printUser, this, ref(users.at(i + curPage * 10))).detach();
+					}
+				}
+			}
+			this_thread::sleep_for(std::chrono::milliseconds(30));
+		}
+		window.clear(sf::Color(200, 200, 200));
+		renderShape(window, { &nextBtn, &prevBtn, &nextBtnText,
+			&prevBtnText, &pageText });
+		for (int i = 0; i < 10; i++) {
+			if (i + curPage * 10 < users.size()) {
+				window.draw(userBtn[i]);
+				users.at(i + curPage * 10).displayBrief(window, 50, 50 + i * 40);
+			}
+			else break;
+		}
+		window.display();
+	}
 }
 
 void Library::rearrangeBooks(vector<Book*>& sorted) {
@@ -556,6 +629,109 @@ void Library::rearrangeBooks(vector<Book*>& sorted) {
 	}
 	return;
 }
+
+void Library::printUser(User& user) {
+	sf::RenderWindow window(sf::VideoMode(700, 800), "Users");
+	window.setFramerateLimit(20);
+	// A list of books borrowed by a user
+	// 10 books one page, next page and prev page, book div is a btn
+	sf::RectangleShape bookBtn[10];
+	for (int i = 0; i < 10; i++) {
+		bookBtn[i].setSize(sf::Vector2f(600, 55));
+		bookBtn[i].setFillColor(sf::Color(200, 200, 200));
+		bookBtn[i].setOutlineColor(sf::Color::Black);
+		bookBtn[i].setOutlineThickness(1);
+		bookBtn[i].setPosition(25, 50 + i * 55);
+	}
+	// Return book btn(box + "return") for each book div
+	sf::RectangleShape returnBtn[10];
+	sf::Text returnBtnText[10];
+	for (int i = 0; i < 10; i++) {
+		returnBtn[i].setSize(sf::Vector2f(100, 55));
+		returnBtnText[i].setString("Return");
+		returnBtnText[i].setFont(font);
+		returnBtnText[i].setCharacterSize(20);
+		initButton(returnBtn[i], returnBtnText[i], 550, 50 + i * 55);
+	}
+	// next page
+	sf::RectangleShape nextBtn(sf::Vector2f(100, 70));
+	sf::Text nextBtnText("Next", font, 20);
+	initButton(nextBtn, nextBtnText, 450, 630);
+	// prev
+	sf::RectangleShape prevBtn(sf::Vector2f(100, 70));
+	sf::Text prevBtnText("Prev", font, 20);
+	initButton(prevBtn, prevBtnText, 150, 630);
+	// Display page
+	sf::Text pageText(to_string(1) + "/" + to_string((user.borrowing.size() + 9) / 10), font, 18);
+	pageText.setFillColor(sf::Color::Black);
+	sf::FloatRect textBounds = pageText.getLocalBounds();
+	pageText.setOrigin(textBounds.left + textBounds.width / 2.0f,
+		textBounds.top + textBounds.height / 2.0f);
+	pageText.setPosition(350, 650);
+	// Instruction: "click to return"
+	sf::Text instructionText("Click to return", font, 18);
+	instructionText.setFillColor(sf::Color(50, 50, 50));
+	instructionText.setPosition(500, 5);
+
+	// Display books
+	size_t curPage = 0;
+	while (window.isOpen())
+	{
+		sf::Event event;
+		while (window.pollEvent(event))
+		{
+			if (event.type == sf::Event::Closed)
+				window.close();
+			// ·Æ¹«ÂIÀ»¿é¤J®Ø
+			if (event.type == sf::Event::MouseButtonPressed &&
+				event.mouseButton.button == sf::Mouse::Left)
+			{
+				sf::Vector2f mousePos(event.mouseButton.x, event.mouseButton.y);
+				if (nextBtn.getGlobalBounds().contains(mousePos)) {
+					if ((curPage + 1) * 10 < user.borrowing.size()) {
+						curPage++;
+						pageText.setString(to_string(curPage + 1) + "/" + to_string((user.borrowing.size() + 9) / 10));
+					}
+				}
+				else if (prevBtn.getGlobalBounds().contains(mousePos)) {
+					if (curPage > 0) {
+						curPage--;
+						pageText.setString(to_string(curPage + 1) + "/" + to_string((user.borrowing.size() + 9) / 10));
+					}
+				}
+				else {
+					for (int i = 0; i < 10; i++) {
+						if (i + curPage * 10 < user.borrowing.size() && returnBtn[i].getGlobalBounds().contains(mousePos)) {
+							// find the book index in the books vector and return the book
+							size_t bookIndex = find_if(books.begin(), books.end(), [&](Book* b) {
+								return *b == user.borrowing.at(i + curPage * 10);
+								}) - books.begin();
+							books[bookIndex]->availableCopies++;
+							user.borrowing.erase(user.borrowing.begin() + i + curPage * 10);
+							break;
+						}
+					}
+				}
+			}
+			this_thread::sleep_for(std::chrono::milliseconds(30));
+		}
+		window.clear(sf::Color(200, 200, 200));
+		renderShape(window, { &nextBtn, &prevBtn, &nextBtnText,
+			&prevBtnText, &pageText, &instructionText });
+		for (int i = 0; i < 10; i++) {
+			if (i + curPage * 10 < user.borrowing.size()) {
+				window.draw(bookBtn[i]);
+				user.borrowing.at(i + curPage * 10).displayFUser(window, 50, 50 + i * 40);
+				window.draw(returnBtn[i]);
+				window.draw(returnBtnText[i]);
+			}
+			else break;
+		}
+		window.display();
+	}
+}
+
+void Library::userBorrowedBook(User& user){}
 
 Library::~Library() {
 	for (auto book : books) {

@@ -34,20 +34,23 @@ public:
 	size_t copyAmount, availableCopies;
 	atomic<bool> changing;
 	Book();
+	Book(const Book& other);
 	void change();
 	void print_book();
 	void display(sf::RenderWindow& window, int x, int y);
 	void displayBrief(sf::RenderWindow& window, int x, int y);
+	void displayFUser(sf::RenderWindow& window, int x, int y);
 	bool valid() const;
 	bool operator==(const Book& other) const;
+	void operator=(const Book& other);
 };
 
 
 typedef struct User {
 	string name;
-	vector<Book*> history;
-	vector<Book*> borrowing;
+	vector<Book> borrowing;
 	User(string& name);
+	void displayBrief(sf::RenderWindow& window, int x, int y);
 	void borrow();
 	void giveBack();
 	void checkDue();
@@ -58,13 +61,17 @@ private:
 	vector<Book*> books;
 	vector<User> users;
 public:
+	const vector<Book*> getBooks() const { return books; }
+	const vector<User> getUsers() const { return users; }
 	void addBook(Book* book);
 	void borrowBook(Book* book);// use a new window
 	void giveBackBook(Book* book); // use a new window
 	void printBooks(const size_t& start); // use a new window
-	void printUsers(); // use a new window
+	void printUser(User& user); // use a new window
 	void rearrangeBooks(vector<Book*>&); // use a new window
 	void listBooks(); // use a new window
+	void listUsers(); // use a new window
+	void userBorrowedBook(User& user); // use a new window
 	~Library();
 };
 

@@ -34,6 +34,12 @@ int main()
 	sf::Text ListBooksInnerText("List Books", font, 20);
 	initButton(ListBooks, ListBooksInnerText, 30, 170);
 
+	// ListUsers
+	sf::RectangleShape ListUsers(sf::Vector2f(100, 50));
+	sf::Text ListUsersInnerText("List Users", font, 20);
+	initButton(ListUsers, ListUsersInnerText, 30, 240);
+
+
 
     std::string userInput = ""; // 儲存輸入的文字
 	Library library;
@@ -41,7 +47,7 @@ int main()
     window.clear(sf::Color(70, 70, 70));
 
     renderShape(window, { &AddBook , &AddBookInnerText , &PrintBook , &PrintBookInnerText,
-        &ListBooks , &ListBooksInnerText });
+        &ListBooks , &ListBooksInnerText, &ListUsers, &ListUsersInnerText });
 
     window.display();
 
@@ -60,12 +66,7 @@ int main()
                         Book* book = new Book();
                         book->change();  // 子執行緒中進行變更
 
-                        if (book->valid()) {
-                            library.addBook(book);  // 加入 library（假設會管理記憶體）
-                        }
-                        else {
-                            delete book;  // 無效則釋放
-                        }
+                        library.addBook(book);
                     }).detach();
                 }
 				else if (PrintBook.getGlobalBounds().contains(mousePos)) {
@@ -78,6 +79,11 @@ int main()
                     cout << "List Books" << endl;
                     thread(&Library::listBooks, &library).detach();
                 }
+				else if (ListUsers.getGlobalBounds().contains(mousePos)) {
+					// List users
+					cout << "List Users" << endl;
+					thread(&Library::listUsers, &library).detach();
+				}
             }
         }
 

@@ -149,17 +149,21 @@ bool Date::operator>(const Date& other) {
 
 User::User(string& name) : name(name) {}
 
-void User::borrow() {
-    // borrow book
+void User::displayBrief(sf::RenderWindow& window, int x, int y) {
+	sf::Text nameText(name, font, 20);
+	nameText.setFillColor(sf::Color::Black);
+	nameText.setPosition(x+10, y+10);
+	sf::Text borrowText("Borrowed: " + to_string(borrowing.size()), font, 20);
+	borrowText.setFillColor(sf::Color::Black);
+	borrowText.setPosition(x+300, y + 10);
+	renderShape(window, { &nameText, &borrowText });
 }
 
-void User::giveBack() {
-    // give back book
-}
+void User::borrow() {}
 
-void User::checkDue() {
-    // check due date
-}
+void User::giveBack() {}
+
+void User::checkDue() {}
 
 Book::Book() {
     name = "";
@@ -170,6 +174,30 @@ Book::Book() {
     availableCopies = 1;
     changing.store(false);
 };
+
+Book::Book(const Book& other) {
+	name = other.name;
+	author = other.author;
+	ISBN = other.ISBN;
+	category = other.category;
+	published = other.published;
+	due = other.due;
+	copyAmount = other.copyAmount;
+	availableCopies = other.availableCopies;
+	changing.store(false);
+}
+
+void Book::operator=(const Book& other) {
+	name = other.name;
+	author = other.author;
+	ISBN = other.ISBN;
+	category = other.category;
+	published = other.published;
+	due = other.due;
+	copyAmount = other.copyAmount;
+	availableCopies = other.availableCopies;
+	changing.store(false);
+}
 
 void Book::change() {
     if (changing.exchange(true)) {
@@ -397,4 +425,20 @@ void Book::displayBrief(sf::RenderWindow& window, int x, int y) {
 	copyAmountText.setPosition(x + 650, y+30);
 	renderShape(window, { &nameText, &authorText, &CategoryText, &copyAmountText, &dateText });
 	
+}
+
+void Book::displayFUser(sf::RenderWindow& window, int x, int y) {
+	sf::Text nameText("Name: " + name.substr(0, 10), font, 20);
+	nameText.setFillColor(sf::Color::Black);
+	nameText.setPosition(x, y + 5);
+	sf::Text authorText("Author: " + author.substr(0, 10), font, 20);
+	authorText.setFillColor(sf::Color::Black);
+	authorText.setPosition(x, y + 30);
+	sf::Text CategoryText("Category: " + category.substr(0, 10), font, 20);
+	CategoryText.setFillColor(sf::Color::Black);
+	CategoryText.setPosition(x + 250, y + 5);
+	sf::Text dueText("Due: " + due.getString(), font, 20);
+	dueText.setFillColor(sf::Color::Black);
+	dueText.setPosition(x + 250, y + 30);
+	renderShape(window, { &nameText, &authorText, &CategoryText, &dueText });
 }

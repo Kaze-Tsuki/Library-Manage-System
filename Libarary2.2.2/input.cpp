@@ -6,8 +6,6 @@
 
 using namespace std;
 
-atomic<bool> runningInputText = false;
-
 void set_mid(sf::RectangleShape& rect, sf::Text& txt)
 {
     // set position mid
@@ -70,7 +68,7 @@ void inputEvent(sf::Event& event, string& s, const char& cmin, const char& cmax,
 	}
 }
 
-void OpenInputText(string& s)
+void inputText::OpenInputText(string& s)
 {
     if (runningInputText.exchange(true)) {
 		cout << "Already running input text window." << endl;
@@ -102,6 +100,10 @@ void OpenInputText(string& s)
 
     bool isTyping = false;    // 是否正在輸入
     std::string userInput = ""; // 儲存輸入的文字
+    window.clear(sf::Color(200, 200, 200));
+    renderShape(window, { &submit_btn , &submit_btn_innerText, &inputBox , &inputText });
+
+    window.display();
 
     while (window.isOpen())
     {
