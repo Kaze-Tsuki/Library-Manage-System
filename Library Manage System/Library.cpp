@@ -662,7 +662,7 @@ void Library::printUser(User& user) {
 		returnBtnText[i].setString("Return");
 		returnBtnText[i].setFont(font);
 		returnBtnText[i].setCharacterSize(20);
-		initButton(returnBtn[i], returnBtnText[i], 550, 50 + i * 55);
+		initButton(returnBtn[i], returnBtnText[i], 550, (size_t)50 + (size_t)i * 55);
 		returnBtn[i].setFillColor(sf::Color(197, 226, 226));
 	}
 	// next page

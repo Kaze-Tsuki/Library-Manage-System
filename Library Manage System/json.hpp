@@ -18,7 +18,7 @@
 #ifndef INCLUDE_NLOHMANN_JSON_HPP_
 #define INCLUDE_NLOHMANN_JSON_HPP_
 
-#include <algorithm> // all_of, find, for_each
+#include "sort.h" // my_all_of, my_find, my_for_each
 #include <cstddef> // nullptr_t, ptrdiff_t, size_t
 #include <functional> // hash, less
 #include <initializer_list> // initializer_list
@@ -2588,7 +2588,7 @@ JSON_HEDLEY_DIAGNOSTIC_POP
         static_assert(std::is_enum<ENUM_TYPE>::value, #ENUM_TYPE " must be an enum!");          \
         /* NOLINTNEXTLINE(modernize-avoid-c-arrays) we don't want to depend on <array> */       \
         static const std::pair<ENUM_TYPE, BasicJsonType> m[] = __VA_ARGS__;                     \
-        auto it = std::find_if(std::begin(m), std::end(m),                                      \
+        auto it = my_find_if(std::begin(m), std::end(m),                                      \
                                [e](const std::pair<ENUM_TYPE, BasicJsonType>& ej_pair) -> bool  \
         {                                                                                       \
             return ej_pair.first == e;                                                          \
@@ -2602,7 +2602,7 @@ JSON_HEDLEY_DIAGNOSTIC_POP
         static_assert(std::is_enum<ENUM_TYPE>::value, #ENUM_TYPE " must be an enum!");          \
         /* NOLINTNEXTLINE(modernize-avoid-c-arrays) we don't want to depend on <array> */       \
         static const std::pair<ENUM_TYPE, BasicJsonType> m[] = __VA_ARGS__;                     \
-        auto it = std::find_if(std::begin(m), std::end(m),                                      \
+        auto it = my_find_if(std::begin(m), std::end(m),                                      \
                                [&j](const std::pair<ENUM_TYPE, BasicJsonType>& ej_pair) -> bool \
         {                                                                                       \
             return ej_pair.second == j;                                                         \
@@ -3096,10 +3096,10 @@ inline void replace_substring(StringType& s, const StringType& f,
                               const StringType& t)
 {
     JSON_ASSERT(!f.empty());
-    for (auto pos = s.find(f);                // find first occurrence of f
+    for (auto pos = s.find(f);                // my_find first occurrence of f
             pos != StringType::npos;          // make sure f was found
             s.replace(pos, f.size(), t),      // replace with t, and
-            pos = s.find(f, pos + t.size()))  // find next occurrence of f
+            pos = s.find(f, pos + t.size()))  // my_find next occurrence of f
     {}
 }
 
@@ -14559,7 +14559,7 @@ NLOHMANN_JSON_NAMESPACE_END
 
 
 
-#include <algorithm> // all_of
+#include <algorithm> // my_all_of
 #include <cctype> // isdigit
 #include <cerrno> // errno, ERANGE
 #include <cstdlib> // strtoull
@@ -14916,7 +14916,7 @@ class json_pointer
             {
                 // check if reference token is a number
                 const bool nums =
-                    std::all_of(reference_token.begin(), reference_token.end(),
+                    my_all_of(reference_token.begin(), reference_token.end(),
                                 [](const unsigned char x)
                 {
                     return std::isdigit(x);
@@ -15141,7 +15141,7 @@ class json_pointer
                 {
                     if (!ptr->contains(reference_token))
                     {
-                        // we did not find the key in the object
+                        // we did not my_find the key in the object
                         return false;
                     }
 
@@ -15248,7 +15248,7 @@ class json_pointer
             // set the beginning of the next reference token
             // (will eventually be 0 if slash == string_t::npos)
             start = (slash == string_t::npos) ? 0 : slash + 1,
-            // find next slash
+            // my_find next slash
             slash = reference_string.find_first_of('/', start))
         {
             // use the text between the beginning of the reference token
@@ -16607,7 +16607,7 @@ class binary_writer
                 {
                     JSON_ASSERT(use_count);
                     const CharType first_prefix = ubjson_prefix(j.front(), use_bjdata);
-                    const bool same_prefix = std::all_of(j.begin() + 1, j.end(),
+                    const bool same_prefix = my_all_of(j.begin() + 1, j.end(),
                                                          [this, first_prefix, use_bjdata](const BasicJsonType & v)
                     {
                         return ubjson_prefix(v, use_bjdata) == first_prefix;
@@ -16615,7 +16615,7 @@ class binary_writer
 
                     std::vector<CharType> bjdx = {'[', '{', 'S', 'H', 'T', 'F', 'N', 'Z'}; // excluded markers in bjdata optimized type
 
-                    if (same_prefix && !(use_bjdata && std::find(bjdx.begin(), bjdx.end(), first_prefix) != bjdx.end()))
+                    if (same_prefix && !(use_bjdata && my_find(bjdx.begin(), bjdx.end(), first_prefix) != bjdx.end()))
                     {
                         prefix_required = false;
                         oa->write_character(to_char_type('$'));
@@ -16687,7 +16687,7 @@ class binary_writer
 
             case value_t::object:
             {
-                if (use_bjdata && j.m_data.m_value.object->size() == 3 && j.m_data.m_value.object->find("_ArrayType_") != j.m_data.m_value.object->end() && j.m_data.m_value.object->find("_ArraySize_") != j.m_data.m_value.object->end() && j.m_data.m_value.object->find("_ArrayData_") != j.m_data.m_value.object->end())
+                if (use_bjdata && j.m_data.m_value.object->size() == 3 && j.m_data.m_value.object->my_find("_ArrayType_") != j.m_data.m_value.object->end() && j.m_data.m_value.object->my_find("_ArraySize_") != j.m_data.m_value.object->end() && j.m_data.m_value.object->my_find("_ArrayData_") != j.m_data.m_value.object->end())
                 {
                     if (!write_bjdata_ndarray(*j.m_data.m_value.object, use_count, use_type, bjdata_version))  // decode bjdata ndarray in the JData format (https://github.com/NeuroJSON/jdata)
                     {
@@ -16705,7 +16705,7 @@ class binary_writer
                 {
                     JSON_ASSERT(use_count);
                     const CharType first_prefix = ubjson_prefix(j.front(), use_bjdata);
-                    const bool same_prefix = std::all_of(j.begin(), j.end(),
+                    const bool same_prefix = my_all_of(j.begin(), j.end(),
                                                          [this, first_prefix, use_bjdata](const BasicJsonType & v)
                     {
                         return ubjson_prefix(v, use_bjdata) == first_prefix;
@@ -16713,7 +16713,7 @@ class binary_writer
 
                     std::vector<CharType> bjdx = {'[', '{', 'S', 'H', 'T', 'F', 'N', 'Z'}; // excluded markers in bjdata optimized type
 
-                    if (same_prefix && !(use_bjdata && std::find(bjdx.begin(), bjdx.end(), first_prefix) != bjdx.end()))
+                    if (same_prefix && !(use_bjdata && my_find(bjdx.begin(), bjdx.end(), first_prefix) != bjdx.end()))
                     {
                         prefix_required = false;
                         oa->write_character(to_char_type('$'));
@@ -16761,7 +16761,7 @@ class binary_writer
     */
     static std::size_t calc_bson_entry_header_size(const string_t& name, const BasicJsonType& j)
     {
-        const auto it = name.find(static_cast<typename string_t::value_type>(0));
+        const auto it = name.my_find(static_cast<typename string_t::value_type>(0));
         if (JSON_HEDLEY_UNLIKELY(it != BasicJsonType::string_t::npos))
         {
             JSON_THROW(out_of_range::create(409, concat("BSON key cannot contain code point U+0000 (at byte ", std::to_string(it), ")"), &j));
@@ -17426,7 +17426,7 @@ class binary_writer
         };
 
         string_t key = "_ArrayType_";
-        auto it = bjdtype.find(static_cast<string_t>(value.at(key)));
+        auto it = bjdtype.my_find(static_cast<string_t>(value.at(key)));
         if (it == bjdtype.end())
         {
             return true;
@@ -17655,7 +17655,7 @@ NLOHMANN_JSON_NAMESPACE_END
 
 
 
-#include <algorithm> // reverse, remove, fill, find, none_of
+#include <algorithm> // reverse, remove, fill, my_find, none_of
 #include <array> // array
 #include <clocale> // localeconv, lconv
 #include <cmath> // labs, isfinite, isnan, signbit
@@ -17925,7 +17925,7 @@ boundaries compute_boundaries(FloatType value)
     return {diyfp::normalize(v), w_minus, w_plus};
 }
 
-// Given normalized diyfp w, Grisu needs to find a (normalized) cached
+// Given normalized diyfp w, Grisu needs to my_find a (normalized) cached
 // power-of-ten c, such that the exponent of the product c * w = f * 2^e lies
 // within a certain range [alpha, gamma] (Definition 3.2 from [1])
 //
@@ -18037,7 +18037,7 @@ inline cached_power get_cached_power_for_binary_exponent(int e)
     //
     // This binary exponent range [-1137,960] results in a decimal exponent
     // range [-307,324]. One does not need to store a cached power for each
-    // k in this range. For each such k it suffices to find a cached power
+    // k in this range. For each such k it suffices to my_find a cached power
     // such that the exponent of the product lies in [alpha,gamma].
     // This implies that the difference of the decimal exponents of adjacent
     // table entries must be less than or equal to
@@ -18161,7 +18161,7 @@ inline cached_power get_cached_power_for_binary_exponent(int e)
 For n != 0, returns k, such that pow10 := 10^(k-1) <= n < 10^k.
 For n == 0, returns 1 and sets pow10 := 1.
 */
-inline int find_largest_pow10(const std::uint32_t n, std::uint32_t& pow10)
+inline int my_find_largest_pow10(const std::uint32_t n, std::uint32_t& pow10)
 {
     // LCOV_EXCL_START
     if (n >= 1000000000)
@@ -18299,7 +18299,7 @@ inline void grisu2_digit_gen(char* buffer, int& length, int& decimal_exponent,
     JSON_ASSERT(p1 > 0);
 
     std::uint32_t pow10{};
-    const int k = find_largest_pow10(p1, pow10);
+    const int k = my_find_largest_pow10(p1, pow10);
 
     //      10^(k-1) <= p1 < 10^k, pow10 = 10^(k-1)
     //
@@ -19625,8 +19625,8 @@ class serializer
         // convert decimal point to '.'
         if (decimal_point != '\0' && decimal_point != '.')
         {
-            // NOLINTNEXTLINE(readability-qualified-auto,llvm-qualified-auto): std::find returns an iterator, see https://github.com/nlohmann/json/issues/3081
-            const auto dec_pos = std::find(number_buffer.begin(), number_buffer.end(), decimal_point);
+            // NOLINTNEXTLINE(readability-qualified-auto,llvm-qualified-auto): my_find returns an iterator, see https://github.com/nlohmann/json/issues/3081
+            const auto dec_pos = my_find(number_buffer.begin(), number_buffer.end(), decimal_point);
             if (dec_pos != number_buffer.end())
             {
                 *dec_pos = '.';
@@ -20052,7 +20052,7 @@ template <class Key, class T, class IgnoredLess = std::less<Key>,
         return 0;
     }
 
-    iterator find(const key_type& key)
+    iterator my_find(const key_type& key)
     {
         for (auto it = this->begin(); it != this->end(); ++it)
         {
@@ -20066,7 +20066,7 @@ template <class Key, class T, class IgnoredLess = std::less<Key>,
 
     template<class KeyType, detail::enable_if_t<
                  detail::is_usable_as_key_type<key_compare, key_type, KeyType>::value, int> = 0>
-    iterator find(KeyType && key) // NOLINT(cppcoreguidelines-missing-std-forward)
+    iterator my_find(KeyType && key) // NOLINT(cppcoreguidelines-missing-std-forward)
     {
         for (auto it = this->begin(); it != this->end(); ++it)
         {
@@ -20078,7 +20078,7 @@ template <class Key, class T, class IgnoredLess = std::less<Key>,
         return Container::end();
     }
 
-    const_iterator find(const key_type& key) const
+    const_iterator my_find(const key_type& key) const
     {
         for (auto it = this->begin(); it != this->end(); ++it)
         {
@@ -20759,7 +20759,7 @@ class basic_json // NOLINT(cppcoreguidelines-special-member-functions,hicpp-spec
         JSON_TRY
         {
             // cppcheck-suppress assertWithSideEffect
-            JSON_ASSERT(!check_parents || !is_structured() || std::all_of(begin(), end(), [this](const basic_json & j)
+            JSON_ASSERT(!check_parents || !is_structured() || my_all_of(begin(), end(), [this](const basic_json & j)
             {
                 return j.m_parent == this;
             }));
@@ -20979,7 +20979,7 @@ class basic_json // NOLINT(cppcoreguidelines-special-member-functions,hicpp-spec
     {
         // check if each element is an array with two elements whose first
         // element is a string
-        bool is_an_object = std::all_of(init.begin(), init.end(),
+        bool is_an_object = my_all_of(init.begin(), init.end(),
                                         [](const detail::json_ref<basic_json>& element_ref)
         {
             // The cast is to ensure op[size_type] is called, bearing in mind size_type may not be int;
@@ -22082,7 +22082,7 @@ class basic_json // NOLINT(cppcoreguidelines-special-member-functions,hicpp-spec
             JSON_THROW(type_error::create(304, detail::concat("cannot use at() with ", type_name()), this));
         }
 
-        auto it = m_data.m_value.object->find(key);
+        auto it = m_data.m_value.object->my_find(key);
         if (it == m_data.m_value.object->end())
         {
             JSON_THROW(out_of_range::create(403, detail::concat("key '", key, "' not found"), this));
@@ -22102,7 +22102,7 @@ class basic_json // NOLINT(cppcoreguidelines-special-member-functions,hicpp-spec
             JSON_THROW(type_error::create(304, detail::concat("cannot use at() with ", type_name()), this));
         }
 
-        auto it = m_data.m_value.object->find(std::forward<KeyType>(key));
+        auto it = m_data.m_value.object->my_find(std::forward<KeyType>(key));
         if (it == m_data.m_value.object->end())
         {
             JSON_THROW(out_of_range::create(403, detail::concat("key '", string_t(std::forward<KeyType>(key)), "' not found"), this));
@@ -22140,7 +22140,7 @@ class basic_json // NOLINT(cppcoreguidelines-special-member-functions,hicpp-spec
             JSON_THROW(type_error::create(304, detail::concat("cannot use at() with ", type_name()), this));
         }
 
-        auto it = m_data.m_value.object->find(std::forward<KeyType>(key));
+        auto it = m_data.m_value.object->my_find(std::forward<KeyType>(key));
         if (it == m_data.m_value.object->end())
         {
             JSON_THROW(out_of_range::create(403, detail::concat("key '", string_t(std::forward<KeyType>(key)), "' not found"), this));
@@ -22291,7 +22291,7 @@ class basic_json // NOLINT(cppcoreguidelines-special-member-functions,hicpp-spec
         // const operator[] only works for objects
         if (JSON_HEDLEY_LIKELY(is_object()))
         {
-            auto it = m_data.m_value.object->find(std::forward<KeyType>(key));
+            auto it = m_data.m_value.object->my_find(std::forward<KeyType>(key));
             JSON_ASSERT(it != m_data.m_value.object->end());
             return it->second;
         }
@@ -22322,7 +22322,7 @@ class basic_json // NOLINT(cppcoreguidelines-special-member-functions,hicpp-spec
         if (JSON_HEDLEY_LIKELY(is_object()))
         {
             // if key is found, return value and given default value otherwise
-            const auto it = find(key);
+            const auto it = my_find(key);
             if (it != end())
             {
                 return it->template get<ValueType>();
@@ -22347,7 +22347,7 @@ class basic_json // NOLINT(cppcoreguidelines-special-member-functions,hicpp-spec
         if (JSON_HEDLEY_LIKELY(is_object()))
         {
             // if key is found, return value and given default value otherwise
-            const auto it = find(key);
+            const auto it = my_find(key);
             if (it != end())
             {
                 return it->template get<ReturnType>();
@@ -22373,7 +22373,7 @@ class basic_json // NOLINT(cppcoreguidelines-special-member-functions,hicpp-spec
         if (JSON_HEDLEY_LIKELY(is_object()))
         {
             // if key is found, return value and given default value otherwise
-            const auto it = find(std::forward<KeyType>(key));
+            const auto it = my_find(std::forward<KeyType>(key));
             if (it != end())
             {
                 return it->template get<ValueType>();
@@ -22400,7 +22400,7 @@ class basic_json // NOLINT(cppcoreguidelines-special-member-functions,hicpp-spec
         if (JSON_HEDLEY_LIKELY(is_object()))
         {
             // if key is found, return value and given default value otherwise
-            const auto it = find(std::forward<KeyType>(key));
+            const auto it = my_find(std::forward<KeyType>(key));
             if (it != end())
             {
                 return it->template get<ReturnType>();
@@ -22681,7 +22681,7 @@ class basic_json // NOLINT(cppcoreguidelines-special-member-functions,hicpp-spec
             JSON_THROW(type_error::create(307, detail::concat("cannot use erase() with ", type_name()), this));
         }
 
-        const auto it = m_data.m_value.object->find(std::forward<KeyType>(key));
+        const auto it = m_data.m_value.object->my_find(std::forward<KeyType>(key));
         if (it != m_data.m_value.object->end())
         {
             m_data.m_value.object->erase(it);
@@ -22739,61 +22739,61 @@ class basic_json // NOLINT(cppcoreguidelines-special-member-functions,hicpp-spec
     /// @name lookup
     /// @{
 
-    /// @brief find an element in a JSON object
-    /// @sa https://json.nlohmann.me/api/basic_json/find/
-    iterator find(const typename object_t::key_type& key)
+    /// @brief my_find an element in a JSON object
+    /// @sa https://json.nlohmann.me/api/basic_json/my_find/
+    iterator my_find(const typename object_t::key_type& key)
     {
         auto result = end();
 
         if (is_object())
         {
-            result.m_it.object_iterator = m_data.m_value.object->find(key);
+            result.m_it.object_iterator = m_data.m_value.object->my_find(key);
         }
 
         return result;
     }
 
-    /// @brief find an element in a JSON object
-    /// @sa https://json.nlohmann.me/api/basic_json/find/
-    const_iterator find(const typename object_t::key_type& key) const
+    /// @brief my_find an element in a JSON object
+    /// @sa https://json.nlohmann.me/api/basic_json/my_find/
+    const_iterator my_find(const typename object_t::key_type& key) const
     {
         auto result = cend();
 
         if (is_object())
         {
-            result.m_it.object_iterator = m_data.m_value.object->find(key);
+            result.m_it.object_iterator = m_data.m_value.object->my_find(key);
         }
 
         return result;
     }
 
-    /// @brief find an element in a JSON object
-    /// @sa https://json.nlohmann.me/api/basic_json/find/
+    /// @brief my_find an element in a JSON object
+    /// @sa https://json.nlohmann.me/api/basic_json/my_find/
     template<class KeyType, detail::enable_if_t<
                  detail::is_usable_as_basic_json_key_type<basic_json_t, KeyType>::value, int> = 0>
-    iterator find(KeyType && key)
+    iterator my_find(KeyType && key)
     {
         auto result = end();
 
         if (is_object())
         {
-            result.m_it.object_iterator = m_data.m_value.object->find(std::forward<KeyType>(key));
+            result.m_it.object_iterator = m_data.m_value.object->my_find(std::forward<KeyType>(key));
         }
 
         return result;
     }
 
-    /// @brief find an element in a JSON object
-    /// @sa https://json.nlohmann.me/api/basic_json/find/
+    /// @brief my_find an element in a JSON object
+    /// @sa https://json.nlohmann.me/api/basic_json/my_find/
     template<class KeyType, detail::enable_if_t<
                  detail::is_usable_as_basic_json_key_type<basic_json_t, KeyType>::value, int> = 0>
-    const_iterator find(KeyType && key) const
+    const_iterator my_find(KeyType && key) const
     {
         auto result = cend();
 
         if (is_object())
         {
-            result.m_it.object_iterator = m_data.m_value.object->find(std::forward<KeyType>(key));
+            result.m_it.object_iterator = m_data.m_value.object->my_find(std::forward<KeyType>(key));
         }
 
         return result;
@@ -22830,7 +22830,7 @@ class basic_json // NOLINT(cppcoreguidelines-special-member-functions,hicpp-spec
                  detail::is_usable_as_basic_json_key_type<basic_json_t, KeyType>::value, int> = 0>
     bool contains(KeyType && key) const
     {
-        return is_object() && m_data.m_value.object->find(std::forward<KeyType>(key)) != m_data.m_value.object->end();
+        return is_object() && m_data.m_value.object->my_find(std::forward<KeyType>(key)) != m_data.m_value.object->end();
     }
 
     /// @brief check the existence of an element in a JSON object given a JSON pointer
@@ -23537,7 +23537,7 @@ class basic_json // NOLINT(cppcoreguidelines-special-member-functions,hicpp-spec
         {
             if (merge_objects && it.value().is_object())
             {
-                auto it2 = m_data.m_value.object->find(it.key());
+                auto it2 = m_data.m_value.object->my_find(it.key());
                 if (it2 != m_data.m_value.object->end())
                 {
                     it2->second.update(it.value(), true);
@@ -24926,7 +24926,7 @@ class basic_json // NOLINT(cppcoreguidelines-special-member-functions,hicpp-spec
             if (parent.is_object())
             {
                 // perform range check
-                auto it = parent.find(last_path);
+                auto it = parent.my_find(last_path);
                 if (JSON_HEDLEY_LIKELY(it != parent.end()))
                 {
                     parent.erase(it);
@@ -24957,8 +24957,8 @@ class basic_json // NOLINT(cppcoreguidelines-special-member-functions,hicpp-spec
                                           const string_t& member,
                                           bool string_type) -> basic_json &
             {
-                // find value
-                auto it = val.m_data.m_value.object->find(member);
+                // my_find value
+                auto it = val.m_data.m_value.object->my_find(member);
 
                 // context-sensitive error message
                 const auto error_msg = (op == "op") ? "operation" : detail::concat("operation '", op, '\''); // NOLINT(bugprone-unused-local-non-trivial-variable)
@@ -25167,7 +25167,7 @@ class basic_json // NOLINT(cppcoreguidelines-special-member-functions,hicpp-spec
                     // escape the key name to be used in a JSON patch
                     const auto path_key = detail::concat<string_t>(path, '/', detail::escape(it.key()));
 
-                    if (target.find(it.key()) != target.end())
+                    if (target.my_find(it.key()) != target.end())
                     {
                         // recursive call to compare object values at key it
                         auto temp_diff = diff(it.value(), target[it.key()], path_key);
@@ -25186,7 +25186,7 @@ class basic_json // NOLINT(cppcoreguidelines-special-member-functions,hicpp-spec
                 // second pass: traverse other object's elements
                 for (auto it = target.cbegin(); it != target.cend(); ++it)
                 {
-                    if (source.find(it.key()) == source.end())
+                    if (source.my_find(it.key()) == source.end())
                     {
                         // found a key that is not in this -> add it
                         const auto path_key = detail::concat<string_t>(path, '/', detail::escape(it.key()));

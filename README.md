@@ -32,6 +32,7 @@ This is a library management system that allows users to manage books, authors, 
 
 ## Installation
 To install the library management system, follow these steps:
+
 *This is a Windows only project, and it is not tested on other platforms.*
 1. Clone the repository to your local machine using the following command:
    ```bash
@@ -64,7 +65,6 @@ This part will introduce how to use the library management system. It will cover
    - **Load**: Load the library state from a file.
 
 2. Add Book: This interface allows you to add a new book to the library. You can enter the book's name, author, and other details.
-    
     - **Name**: The name of the book.
     - **Author**: The author of the book.
     - **ISBN**: The ISBN number of the book.
@@ -108,9 +108,13 @@ Each Line contains the following information:
 ### Features
 
 - **Multi-threading**: The system supports multi-threading to handle multiple users and books simultaneously. This makes it more efficient and closer to a real-world application.
+
 - **User-friendly GUI**: The system provides a user-friendly GUI for easy navigation and management of library resources. The interface is designed to be intuitive and easy to use, making it accessible to users of all ages.
+
 - **Book Management**: The system allows you to add, view, and list books in the library. You can also filter the books by name, author, category, and published year.
+
 - **Intuitive Navigation**: The system provides intuitive navigation through the use of links between different interfaces. You can easily switch between different sections of the system to manage your library resources.
+
 - **Json File Format**: The system uses JSON file format to store the library state. This makes it easy to read and write data, and allows for easy integration with other systems. Or develop a webpage to display the data.
 
 ## Bugs

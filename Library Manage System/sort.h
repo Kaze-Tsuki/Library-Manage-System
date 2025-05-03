@@ -36,5 +36,16 @@ Iterator my_find(Iterator begin, Iterator end, const T& value) {
     return end;
 }
 
+template <typename InputIt, typename UnaryPredicate>
+bool my_all_of(InputIt first, InputIt last, UnaryPredicate p) {
+    for (; first != last; ++first) {
+        if (!p(*first)) {
+            return false;
+        }
+    }
+    return true;
+}
+
+
 #endif // !mysort
 
