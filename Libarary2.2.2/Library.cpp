@@ -337,15 +337,16 @@ void Library::listBooks() {
 		window.clear(sf::Color(210, 233, 233));
 
 		for (int i = 0; i < 10; i++) {
-			window.draw(bookBtn[i]);
 			if (i + curPage * 10 < present.size())
 			try {
+				window.draw(bookBtn[i]);
 				present.at(i + curPage * 10)->displayBrief(window, 50, 50 + i * 60);
 			}
 			catch (const std::out_of_range& e) {
 				// 如果越界可以跳過或記錄錯誤
 				std::cerr << "Conflict of multi tasking: " << e.what() << std::endl;
 			}
+			else break;
 		}
 		renderShape(window, { &nextBtn, &prevBtn, &filterBtn, &filterBtnText,
 			&nextBtnText, &prevBtnText, &pageText });
