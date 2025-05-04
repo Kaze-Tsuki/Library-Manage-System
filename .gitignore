@@ -31,12 +31,11 @@
 *.out
 *.app
 /.vs/Library Manage System/FileContentIndex
-/.vs/Libarary2.6.2/CopilotIndices/17.13.444.19527
 /Library Manage System/SFML-2.6.2
-/.vs/Libarary2.6.2
 /Library Manage System/x64
 /x64
 /Library Manage System/Library Manage System.vcxproj
 /Library Manage System/Library Manage System.vcxproj.filters
 /Library Manage System/Library Manage System.vcxproj.user
-/Libarary2.6.2.sln
+/.vs/Library Manage System
+/Library Manage System.sln

@@ -14,7 +14,7 @@ Date::Date(int y, int m, int d) : year(y), month(m), day(d) {
 
 void Date::change_date() {
     if (changing.exchange(true)) {
-        cout << "Already running input text window." << endl;
+		thread([]() { errorWindow("Already running input text window."); }).detach();
         return;
     }
     sf::RenderWindow window(sf::VideoMode(800, 170), "Text Input");
@@ -125,10 +125,6 @@ string Date::getString() const{
     return s;
 }
 
-void Date::print_date() const{
-    cout << year << "-" << month << "-" << day << endl;
-}
-
 void Date::operator=(const Date& other) {
     year = other.year;
     month = other.month;
@@ -202,13 +198,13 @@ void Book::operator=(const Book& other) {
 	changing.store(false);
 }
 
-void Book::change() {
+bool Book::change() {
     if (changing.exchange(true)) {
-        cout << "Already running input text window." << endl;
-        return;
+		thread([]() { errorWindow("Already running input text window."); }).detach();
+        return false;
     }
     sf::RenderWindow window(sf::VideoMode(530, 540), "ADD Book");
-    window.setFramerateLimit(30);
+    window.setFramerateLimit(20);
 
     // Name
     sf::RectangleShape inputName(sf::Vector2f(300, 50));
@@ -259,6 +255,16 @@ void Book::change() {
     submit_btn_innerText.setFillColor(sf::Color::Black);
     set_mid(submit_btn, submit_btn_innerText);
 
+	// Abandon
+	sf::RectangleShape abandon_btn(sf::Vector2f(100, 50));
+	abandon_btn.setFillColor(sf::Color(168, 255, 255));
+	abandon_btn.setOutlineColor(sf::Color(167, 167, 211));
+	abandon_btn.setOutlineThickness(2);
+	abandon_btn.setPosition(380, 130);
+	sf::Text abandon_btn_innerText("Abandon", font, 24);
+	abandon_btn_innerText.setFillColor(sf::Color::Black);
+	set_mid(abandon_btn, abandon_btn_innerText);
+
     bool inname = false, inauthor = false, inISBN = false, incategory = false, incopyAmount = false;// 是否正在輸入
     string sname(name), sauthor(author), sISBN(ISBN), scategory(category), scopyAmount(to_string(copyAmount));
 
@@ -298,7 +304,7 @@ void Book::change() {
                 else if (submit_btn.getGlobalBounds().contains(mousePos)) {
                     inname = false, inauthor = false, inISBN = false, incategory = false, incopyAmount = false;
                     if (published.changing.load()) {
-                        cout << "Please wait for the date to be set." << endl;
+						thread([]() { errorWindow("Please set the date first."); }).detach();
                         continue;
                     }
                     name = sname;
@@ -309,6 +315,11 @@ void Book::change() {
                     copyAmount = min(stoi(scopyAmount), 1000000);
                     availableCopies = copyAmount;
                     window.close();
+                }
+                else if (abandon_btn.getGlobalBounds().contains(mousePos)) {
+					window.close();
+					changing.store(false);
+                    return false;
                 }
                 else {
                     inname = false, inauthor = false, inISBN = false, incategory = false, incopyAmount = false;
@@ -321,47 +332,47 @@ void Book::change() {
 
             // 鍵盤輸入文字
             if (inname) {
-                inputEvent(event, sname, ' ', 'z', 17);
+                inputEvent(event, sname, ' ', 'z', 19);
                 inputNameText.setString(sname); // 更新畫面上的文字
             }
             else if (inauthor) {
-                inputEvent(event, sauthor, ' ', 'z', 17);
+                inputEvent(event, sauthor, ' ', 'z', 19);
                 inputAuthorText.setString(sauthor); // 更新畫面上的文字
             }
             else if (inISBN) {
-                inputEvent(event, sISBN, '0', '9', 10);
+                inputEvent(event, sISBN, '0', '9', 13);
                 inputISBNText.setString(sISBN); // 更新畫面上的文字
             }
             else if (incategory) {
-                inputEvent(event, scategory, ' ', 'z', 17);
+                inputEvent(event, scategory, ' ', 'z', 19);
                 inputCategoryText.setString(scategory); // 更新畫面上的文字
             }
             else if (incopyAmount) {
-                inputEvent(event, scopyAmount, '0', '9', 3);
+                inputEvent(event, scopyAmount, '0', '9', 4);
                 inputcopyAmountText.setString(scopyAmount); // 更新畫面上的文字
             }
-            this_thread::sleep_for(std::chrono::milliseconds(7));
+            //this_thread::sleep_for(std::chrono::milliseconds(7));
         }
         window.clear(sf::Color(210, 233, 233));
 
-        renderShape(window, { &inputName, &inputAuthor, &inputISBN, &inputCategory
+        renderShape(window, { &inputName, &inputAuthor, &inputISBN, &inputCategory, &abandon_btn
             , &inputcopyAmount, &Published_btn, &submit_btn , &Nametxt, &Authortxt, &ISBNtxt, &Categorytxt, &copyAmounttxt
-            , &submit_btn_innerText, &inputNameText, &inputAuthorText, &inputISBNText
+            , &submit_btn_innerText, &inputNameText, &inputAuthorText, &inputISBNText, &abandon_btn_innerText
             , &inputCategoryText, &inputcopyAmountText, &PublishedText , &PublichedContent });
 
         window.display();
     }
     changing.store(false);
-    return;
+    return true;
 }
 
 void Book::print_book() {
     cout << "Name: " << name << endl;
     cout << "Author: " << author << endl;
     cout << "Published: ";
-    published.print_date();
+	cout << published.getString() << endl;
     cout << "Due: ";
-    due.print_date();
+	cout << due.getString() << endl;
     cout << "ISBN: " << ISBN << endl;
     cout << "Category: " << category << endl;
     cout << "Copy Amount: " << copyAmount << endl;

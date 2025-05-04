@@ -17,7 +17,6 @@ typedef struct Date {
 	Date();
 	Date(int y, int m, int d);
 	void change_date();
-	void print_date() const;
 	string getString() const;
 	void operator=(const Date& other);
 	bool operator<(const Date& other);
@@ -35,7 +34,7 @@ public:
 	atomic<bool> changing;
 	Book();
 	Book(const Book& other);
-	void change();
+	bool change();
 	void print_book();
 	void display(sf::RenderWindow& window, int x, int y);
 	void displayBrief(sf::RenderWindow& window, int x, int y);

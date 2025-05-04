@@ -1,6 +1,8 @@
 #include "json.hpp"
 #include <fstream>
 #include "Library.h"
+#include <thread>
+#include "input.h"
 
 using json = nlohmann::json;
 
@@ -76,7 +78,11 @@ void saveLibrary(Library& lib, const std::string& filename) {
 
 void loadLibrary(Library& lib, const std::string& filename) {
     std::ifstream in(filename);
-    if (!in) return;
+    if (!in.is_open())
+    {
+		thread([]() { errorWindow("Failed to open file."); }).detach();
+		return;
+    }
     json j;
     in >> j;
 

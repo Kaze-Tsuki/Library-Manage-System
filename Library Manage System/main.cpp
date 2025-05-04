@@ -19,6 +19,10 @@ int main()
         return -1;
     }
 
+    std::string userInput = ""; // 儲存輸入的文字
+	Library library;
+	struct inputText inputText;
+
     // 輸入框
 	// AddBook
     sf::RectangleShape AddBook(sf::Vector2f(100, 50));
@@ -50,11 +54,6 @@ int main()
 	sf::Text LoadInnerText("Load", font, 20);
 	initButton(Load, LoadInnerText, 200, 100);
 
-
-    std::string userInput = ""; // 儲存輸入的文字
-	Library library;
-	struct inputText inputText;
-
     window.clear(sf::Color(235, 235, 255));
 
     renderShape(window, { &AddBook , &AddBookInnerText , &PrintBook , &PrintBookInnerText,
@@ -63,9 +62,7 @@ int main()
 
     window.display();
 
-    while (window.isOpen())
-    {
-        sf::Event event;
+    sf::Event event;
         while (window.waitEvent(event))
         {
             if (event.type == sf::Event::Closed)
@@ -76,62 +73,55 @@ int main()
                 if (AddBook.getGlobalBounds().contains(mousePos)) {
                     std::thread([&library]() {
                         Book* book = new Book();
-                        book->change();  // 子執行緒中進行變更
-
+						bool create = book->change();
+						if (!create) return;
                         library.addBook(book);
                     }).detach();
                 }
 				else if (PrintBook.getGlobalBounds().contains(mousePos)) {
 					// Print book
-					cout << "Print Book" << endl;
 					thread(&Library::printBooks, &library, 0).detach();
 				}
                 else if (ListBooks.getGlobalBounds().contains(mousePos)) {
                     // List books
-                    cout << "List Books" << endl;
                     thread(&Library::listBooks, &library).detach();
                 }
 				else if (ListUsers.getGlobalBounds().contains(mousePos)) {
 					// List users
-					cout << "List Users" << endl;
 					thread(&Library::listUsers, &library).detach();
 				}
                 else if (Save.getGlobalBounds().contains(mousePos)) {
                     // Save library
-                    cout << "Save Library" << endl;
 					thread([&library, &inputText]() {
 						string savePath;
+						if (inputText.runningInputText) {
+							thread([]() { errorWindow("Already running input text window."); }).detach();
+							return;
+						}
 						inputText.OpenInputText(savePath);
 						if (savePath == "") {
-							cout << "Please enter a valid path." << endl;
 							return;
 						}
 						saveLibrary(library, savePath + ".json");
-						}).detach();
+					}).detach();
                 }
 				else if (Load.getGlobalBounds().contains(mousePos)) {
 					// Load library
-					cout << "Load Library" << endl;
 					thread([&library, &inputText]() {
 						string savePath;
+						if (inputText.runningInputText) {
+							thread([]() { errorWindow("Already running input text window."); }).detach();
+							return;
+						}
 						inputText.OpenInputText(savePath);
 						if (savePath == "") {
-							cout << "Please enter a valid path." << endl;
 							return;
 						}
 						loadLibrary(library, savePath + ".json");
-						}).detach();
+					}).detach();
 				}
             }
         }
-
-        window.clear(sf::Color(235, 235, 255));
-
-		renderShape(window, { &AddBook , &AddBookInnerText , &PrintBook , &PrintBookInnerText,
-            &ListBooks , &ListBooksInnerText });
-
-        window.display();
-    }
 
     return 0;
 }

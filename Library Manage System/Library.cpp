@@ -11,7 +11,7 @@ using namespace std;
 void Library::addBook(Book* book) {
     // Check if the book is valid
    if (!book->valid()) {
-       cout << "Book is not valid." << endl;
+	   thread([]() { errorWindow("Invalid book information."); }).detach();
 	   delete book; // Free the memory allocated for the book
        return;
    }
@@ -21,7 +21,7 @@ void Library::addBook(Book* book) {
        return *b == *book;
    });
    if (exists) {
-       cout << "Book already exists." << endl;
+	   thread([]() { errorWindow("Book already exists."); }).detach();
        return;
    }
 
@@ -31,7 +31,7 @@ void Library::addBook(Book* book) {
 void Library::addUser(const User& user) {
 	for (const auto& u : users) {
 		if (u.name == user.name) {
-			cout << "User already exists.\n";
+			thread([]() { errorWindow("User already exists."); }).detach();
 			return;
 		}
 	}
@@ -40,7 +40,7 @@ void Library::addUser(const User& user) {
 
 void Library::borrowBook(Book* book) {
 	if (book->changing.exchange(true)) {
-		cout << "System Busy...\n";
+		thread([]() { errorWindow("Already running input text window."); }).detach();
 		return;
 	}
 	// Must exists
@@ -145,24 +145,23 @@ void Library::giveBackBook(Book* book) {
 		if (bookIt != it->borrowing.end()) {
 			it->borrowing.erase(bookIt);
 			book->availableCopies++;
-			cout << "Book returned successfully." << endl;
 		}
 		else {
-			cout << "User does not have this book." << endl;
+			thread([]() { errorWindow("Book not borrowed by user."); }).detach();
 		}
 	}
 	else {
-		cout << "User does not exist." << endl;
+		thread([]() { errorWindow("User not found."); }).detach();
 	}
 }
 
 void Library::printBooks(const size_t& start){
 	if (books.empty()) {
-		cout << "No books in the library." << endl;
+		thread([]() { errorWindow("No books available."); }).detach();
 		return;
 	}
 	// using a new window
-	sf::RenderWindow window(sf::VideoMode(800, 400), "Books");
+	sf::RenderWindow window(sf::VideoMode(650, 270), "Books");
 	window.setFramerateLimit(20);
 
 	size_t curBook = start;
@@ -515,7 +514,8 @@ void Library::rearrangeBooks(vector<Book*>& sorted) {
 				}
 				else if (submitBox.getGlobalBounds().contains(mousePos)) {
 					if (filterPublished.changing.load()) {
-						cout << "Date Input Still Open\n"; continue;
+						thread([]() { errorWindow("Already running input text window."); }).detach();
+						continue;
 					}
 					window.close();
 				}

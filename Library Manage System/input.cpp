@@ -2,7 +2,6 @@
 #include <iostream>
 #include "input.h"
 #include <thread>
-#include <Windows.h>
 
 using namespace std;
 
@@ -54,7 +53,7 @@ void inputEvent(sf::Event& event, string& s, const char& cmin, const char& cmax,
 			}
 		}
 		else if (event.text.unicode == 22) { // Ctrl + V
-			s += getClipboardText();
+			s += sf::Clipboard::getString();
 			if (s.size() > length) {
 				s = s.substr(0, length); // 限制輸入長度
 			}
@@ -71,7 +70,7 @@ void inputEvent(sf::Event& event, string& s, const char& cmin, const char& cmax,
 void inputText::OpenInputText(string& s)
 {
     if (runningInputText.exchange(true)) {
-		cout << "Already running input text window." << endl;
+		thread([]() { errorWindow("Already running input text window."); }).detach();
 		return;
     }
     sf::RenderWindow window(sf::VideoMode(600, 130), "Text Input");
@@ -122,7 +121,6 @@ void inputText::OpenInputText(string& s)
                 }
                 else if (submit_btn.getGlobalBounds().contains(mousePos)) {
                     isTyping = false; // 結束輸入
-                    cout << "輸入了: " << userInput << endl;
                     s = userInput;
                     runningInputText.store(false); // 關閉 flag
                     return;
@@ -149,23 +147,18 @@ void inputText::OpenInputText(string& s)
     return;
 }
 
-string getClipboardText() {
-    if (!OpenClipboard(nullptr)) return "";
-    HANDLE hData = GetClipboardData(CF_TEXT);  // 也可以用 CF_UNICODETEXT 配合 wstring
-    if (hData == nullptr) {
-        CloseClipboard();
-        return "";
-    }
-
-    char* pszText = static_cast<char*>(GlobalLock(hData));
-    if (pszText == nullptr) {
-        GlobalUnlock(hData);
-        CloseClipboard();
-        return "";
-    }
-
-    std::string text(pszText);
-    GlobalUnlock(hData);
-    CloseClipboard();
-    return text;
+void errorWindow(string s)
+{
+	sf::RenderWindow window(sf::VideoMode(500, 70), "Error");
+	window.setFramerateLimit(0);
+	sf::Text errorText(s, font, 30);
+	errorText.setFillColor(sf::Color::Red);
+	errorText.setPosition(20, 5);
+	window.clear(sf::Color(244, 255, 229));
+	window.draw(errorText);
+	window.display();
+	sf::Event event;
+	while (window.waitEvent(event)) {
+		window.close();
+	}
 }

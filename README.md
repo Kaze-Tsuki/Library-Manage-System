@@ -2,7 +2,7 @@
 
 <br>
 <div>
-    <img alt="C++" src="https://img.shields.io/badge/C++-17-%2300599C?logo=cplusplus">
+    <img alt="C++" src="https://img.shields.io/badge/C++-14-%2300599C?logo=cplusplus">
 </div>
 <div>
     <img alt="platform" src="https://img.shields.io/badge/platform-Windows%20%7C%20Linux%20%7C%20macOS-blueviolet">
@@ -33,7 +33,6 @@ This is a library management system that allows users to manage books, authors, 
 ## Installation
 To install the library management system, follow these steps:
 
-*This is a Windows only project, and it is not tested on other platforms.*
 1. Clone the repository to your local machine using the following command:
    ```bash
    git clone https://github.com/Kaze-Tsuki/Libarary2.6.2.git
@@ -72,7 +71,7 @@ This part will introduce how to use the library management system. It will cover
     - **Copy**: The number of copies of the book available in the library.
     - **Published Date**: The year the book was published.
 
-3. View Book: This interface allows you to view the details of a book in the library. You can use `next` and `prev` to navigate through the books. You can also borrow or return a book from this interface. The books are arranged by added time.
+3. View Book: This interface allows you to view the details of a book in the library. You can use `next` and `prev` to navigate through the books. You can also `borrow` or `return` a book from this interface. The books are arranged by added time.
 
 4. List Book: This interface allows you to list all the books in the library. You can use `next` and `prev` to navigate through the books. You can use the `filter button` to filter the books by name, author, category, and published year sorted by the attribute you want in ascending or descending order. `On clicking the books`, you will be redirected to the view book interface of the book.
 Each Line contains the following information:
@@ -82,12 +81,12 @@ Each Line contains the following information:
     - **Copy**: available copies / total copies
     - **Published Date**
 
-5. List User: This interface allows you to list all the users in the library. You can use next and prev to navigate through the users. `On clicking the users`, you will be redirected to the view user interface of the user.
+5. List User: This interface allows you to list all the users in the library. You can use `next` and `prev` to navigate through the users. `On clicking the users`, you will be redirected to the view user interface of the user.
 Each Line contains the following information:
     - **Name**
     - **Borrowed Books**: The number of books borrowed by the user.
 
-6. View User: This interface allows you to view the books borrowed by a user. You can use `next` and `prev` to navigate through the books. You can also return a book **directly** from this interface. The books are arranged by borrowed time.
+6. View User: This interface allows you to view the books borrowed by a user. You can use `next` and `prev` to navigate through the books. You can also `return` a book **directly** from this interface. The books are arranged by borrowed time.
 Each Line contains the following information:
     - **Name**
     - **Due Date**: The date when the book is due to be returned.
@@ -127,3 +126,5 @@ Following will list some possible bugs:
 - The Save system may stored no name user causing the available books more than the total books.
 
 - The Load system may not load the data correctly if the file is not in the correct format or if there are any errors in the data.
+
+- Sometimes OPENGL will not work properly, you may need to restart the system to make it work again.
