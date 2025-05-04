@@ -46,6 +46,22 @@ bool my_all_of(InputIt first, InputIt last, UnaryPredicate p) {
     return true;
 }
 
+template<typename ForwardIt, typename UnaryPredicate>
+ForwardIt my_remove_if(ForwardIt first, ForwardIt last, UnaryPredicate pred) {
+    first = std::find_if(first, last, pred); // Find first element to remove
+    if (first == last) return last;
+
+    ForwardIt next = std::next(first);
+    while (next != last) {
+        if (!pred(*next)) {
+            *first = std::move(*next);
+            ++first;
+        }
+        ++next;
+    }
+    return first; // New logical end
+}
+
 
 #endif // !mysort
 

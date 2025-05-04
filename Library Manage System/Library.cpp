@@ -71,7 +71,7 @@ void Library::borrowBook(Book* book) {
 	submit_btn_innerText.setFillColor(sf::Color::Black);
 	set_mid(submit_btn, submit_btn_innerText);
 
-	bool inname = false;// ¬O§_¥¿¦b¿é¤J
+	bool inname = false;// ï¿½Oï¿½_ï¿½ï¿½ï¿½bï¿½ï¿½J
 	
 	while (window.isOpen())
 	{
@@ -80,7 +80,7 @@ void Library::borrowBook(Book* book) {
 		{
 			if (event.type == sf::Event::Closed)
 				window.close();
-			// ·Æ¹«ÂIÀ»¿é¤J®Ø
+			// ï¿½Æ¹ï¿½ï¿½Iï¿½ï¿½ï¿½ï¿½Jï¿½ï¿½
 			if (event.type == sf::Event::MouseButtonPressed &&
 				event.mouseButton.button == sf::Mouse::Left)
 			{
@@ -100,7 +100,7 @@ void Library::borrowBook(Book* book) {
 
 			if (inname) {
 				inputEvent(event, username, 'A', 'z', 20);
-				inputNameText.setString(username); // §ó·sµe­±¤Wªº¤å¦r
+				inputNameText.setString(username); // ï¿½ï¿½sï¿½eï¿½ï¿½ï¿½Wï¿½ï¿½ï¿½ï¿½r
 			}
 			this_thread::sleep_for(std::chrono::milliseconds(5));
 		}
@@ -200,7 +200,7 @@ void Library::printBooks(const size_t& start){
 		{
 			if (event.type == sf::Event::Closed)
 				window.close();
-			// ·Æ¹«ÂIÀ»¿é¤J®Ø
+			// ï¿½Æ¹ï¿½ï¿½Iï¿½ï¿½ï¿½ï¿½Jï¿½ï¿½
 			if (event.type == sf::Event::MouseButtonPressed &&
 				event.mouseButton.button == sf::Mouse::Left)
 			{
@@ -288,7 +288,7 @@ void Library::listBooks() {
 		{
 			if (event.type == sf::Event::Closed)
 				window.close();
-			// ·Æ¹«ÂIÀ»¿é¤J®Ø
+			// ï¿½Æ¹ï¿½ï¿½Iï¿½ï¿½ï¿½ï¿½Jï¿½ï¿½
 			if (event.type == sf::Event::MouseButtonPressed &&
 				event.mouseButton.button == sf::Mouse::Left)
 			{
@@ -342,7 +342,7 @@ void Library::listBooks() {
 				present.at(i + curPage * 10)->displayBrief(window, 50, 50 + i * 60);
 			}
 			catch (const std::out_of_range& e) {
-				// ¦pªG¶V¬É¥i¥H¸õ¹L©Î°O¿ý¿ù»~
+				// ï¿½pï¿½Gï¿½Vï¿½É¥iï¿½Hï¿½ï¿½ï¿½Lï¿½Î°Oï¿½ï¿½ï¿½ï¿½ï¿½~
 				std::cerr << "Conflict of multi tasking: " << e.what() << std::endl;
 			}
 			else break;
@@ -393,7 +393,7 @@ void Library::listUsers() {
 		{
 			if (event.type == sf::Event::Closed)
 				window.close();
-			// ·Æ¹«ÂIÀ»¿é¤J®Ø
+			// ï¿½Æ¹ï¿½ï¿½Iï¿½ï¿½ï¿½ï¿½Jï¿½ï¿½
 			if (event.type == sf::Event::MouseButtonPressed &&
 				event.mouseButton.button == sf::Mouse::Left)
 			{
@@ -574,15 +574,15 @@ void Library::rearrangeBooks(vector<Book*>& sorted) {
 			}
 			if (inName) {
 				inputEvent(event, filterName, 'A', 'z', 20);
-				filterNameText.setString(filterName); // §ó·sµe­±¤Wªº¤å¦r
+				filterNameText.setString(filterName); // ï¿½ï¿½sï¿½eï¿½ï¿½ï¿½Wï¿½ï¿½ï¿½ï¿½r
 			}
 			else if (inAuthor) {
 				inputEvent(event, filterAuthor, 'A', 'z', 20);
-				filterAuthorText.setString(filterAuthor); // §ó·sµe­±¤Wªº¤å¦r
+				filterAuthorText.setString(filterAuthor); // ï¿½ï¿½sï¿½eï¿½ï¿½ï¿½Wï¿½ï¿½ï¿½ï¿½r
 			}
 			else if (inCategory) {
 				inputEvent(event, filterCategory, 'A', 'z', 20);
-				filterCategoryText.setString(filterCategory); // §ó·sµe­±¤Wªº¤å¦r
+				filterCategoryText.setString(filterCategory); // ï¿½ï¿½sï¿½eï¿½ï¿½ï¿½Wï¿½ï¿½ï¿½ï¿½r
 			}
 		}
 		// Render
@@ -599,25 +599,25 @@ void Library::rearrangeBooks(vector<Book*>& sorted) {
 	}
 	// start filtering and sorting
 	if (filterCategory != "")
-	sorted.erase(std::remove_if(sorted.begin(), sorted.end(),
-		[&](Book* b) { return b->category != filterCategory; }),
-		sorted.end());
+		sorted.erase(my_remove_if(sorted.begin(), sorted.end(),
+			[&](Book* b) { return b->category != filterCategory; }),
+			sorted.end());
 	if (filterAuthor != "")
-	sorted.erase(std::remove_if(sorted.begin(), sorted.end(),
-		[&](Book* b) { return b->author != filterAuthor; }),
-		sorted.end());
+		sorted.erase(my_remove_if(sorted.begin(), sorted.end(),
+			[&](Book* b) { return b->author != filterAuthor; }),
+			sorted.end());
 	if (filterName != "")
-	sorted.erase(std::remove_if(sorted.begin(), sorted.end(),
-		[&](Book* b) { return b->name != filterName; }),
-		sorted.end());
+		sorted.erase(my_remove_if(sorted.begin(), sorted.end(),
+			[&](Book* b) { return b->name != filterName; }),
+			sorted.end());
 	if (togglePusblished == 1) // my_find larger
-		sorted.erase(std::remove_if(sorted.begin(), sorted.end(),
+		sorted.erase(my_remove_if(sorted.begin(), sorted.end(),
 			[&](Book* b) { return b->published < filterPublished; }),
 			sorted.end());
 	else if (togglePusblished == 2) // my_find smaller
-	sorted.erase(std::remove_if(sorted.begin(), sorted.end(),
-		[&](Book* b) { return b->published > filterPublished; }),
-		sorted.end());
+		sorted.erase(my_remove_if(sorted.begin(), sorted.end(),
+			[&](Book* b) { return b->published > filterPublished; }),
+			sorted.end());
 	if (sortIndex == 0) {
 		msort(sorted.begin(), sorted.end(), [&](Book* a, Book* b) {
 			return isAsc ? a->name < b->name : a->name > b->name;
@@ -694,7 +694,7 @@ void Library::printUser(User& user) {
 		{
 			if (event.type == sf::Event::Closed)
 				window.close();
-			// ·Æ¹«ÂIÀ»¿é¤J®Ø
+			// ï¿½Æ¹ï¿½ï¿½Iï¿½ï¿½ï¿½ï¿½Jï¿½ï¿½
 			if (event.type == sf::Event::MouseButtonPressed &&
 				event.mouseButton.button == sf::Mouse::Left)
 			{
