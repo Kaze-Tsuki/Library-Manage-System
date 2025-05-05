@@ -3,11 +3,13 @@
 #include "Library.h"
 #include <thread>
 #include <iostream>
+#include <ctime>
 #include "FileIO.h"
 
 using namespace std;
 
 sf::Font font;
+Date today;
 
 int main()
 {
@@ -18,6 +20,13 @@ int main()
         std::cout << "Failed to load font\n";
         return -1;
     }
+
+	// Set today's date
+	time_t t = time(nullptr);
+	tm now; localtime_s(&now, &t);
+	today.year = now.tm_year + 1900;
+	today.month = now.tm_mon + 1;
+	today.day = now.tm_mday;
 
     std::string userInput = ""; // 儲存輸入的文字
 	Library library;

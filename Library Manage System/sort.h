@@ -9,7 +9,37 @@ void msort(RandomIt first, RandomIt last, Compare comp) {
         RandomIt middle = first + (last - first) / 2;
         msort(first, middle, comp);
         msort(middle, last, comp);
-        std::inplace_merge(first, middle, last, comp);
+        my_inplace_merge(first, middle, last, comp);
+    }
+}
+
+template<typename RandomIt, typename Compare>
+void my_inplace_merge(RandomIt first, RandomIt middle, RandomIt last, Compare comp) {
+    // Helper to compute the gap like Shell sort
+    auto nextGap = [](int gap) {
+        if (gap <= 1)
+            return 0;
+        return (gap / 2) + (gap % 2); // ceil(gap / 2)
+    };
+
+    int n = last - first;
+    int gap = nextGap(n);
+
+    while (gap > 0) {
+        RandomIt i = first;
+        RandomIt j = first + gap;
+
+        while (j < last) {
+            if (comp(*j, *i)) {
+                auto temp = *i;
+                *i = *j;
+                *j = temp;
+            }
+            ++i;
+            ++j;
+        }
+
+        gap = nextGap(gap);
     }
 }
 

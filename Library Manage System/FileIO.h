@@ -54,11 +54,6 @@ void from_json(const json& j, User& u) {
 // ------------------ Library save/load ------------------
 
 
-// 反序列化 std::vector<User>
-void from_json(const nlohmann::json& j, std::vector<User>& users) {
-    users = j.get<std::vector<User>>();  // 使用該類型的 from_json
-}
-
 void saveLibrary(Library& lib, const std::string& filename) {
     json j;
     auto books = lib.getBooks();

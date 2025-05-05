@@ -23,6 +23,8 @@ typedef struct Date {
 	bool operator>(const Date& other);
 }Date;
 
+extern Date today; // Global variable for today's date
+
 class Book {
 public:
 	string name;

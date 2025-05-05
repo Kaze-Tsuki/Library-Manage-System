@@ -54,6 +54,13 @@ void inputEvent(sf::Event& event, string& s, const char& cmin, const char& cmax,
 		}
 		else if (event.text.unicode == 22) { // Ctrl + V
 			s += sf::Clipboard::getString();
+			// filter with cmin and cmax
+			for (size_t i = 0; i < s.size(); i++) {
+				if (s[i] < cmin || s[i] > cmax) {
+					s.erase(i, 1);
+					i--;
+				}
+			}
 			if (s.size() > length) {
 				s = s.substr(0, length); // 限制輸入長度
 			}

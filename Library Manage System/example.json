@@ -1,0 +1,47 @@
+{
+    "books": [
+        {
+            "ISBN": "0000000000000",
+            "author": "someone",
+            "availableCopies": 0,
+            "category": "some category",
+            "copyAmount": 1,
+            "due": [
+                2020,
+                1,
+                1
+            ],
+            "name": "a book",
+            "published": [
+                3000,
+                1,
+                1
+            ]
+        }
+    ],
+    "users": [
+        {
+            "borrowing": [
+                {
+                    "ISBN": "0000000000000",
+                    "author": "someone",
+                    "availableCopies": 0,
+                    "category": "some category",
+                    "copyAmount": 1,
+                    "due": [
+                        2020,
+                        1,
+                        1
+                    ],
+                    "name": "a book",
+                    "published": [
+                        3000,
+                        1,
+                        1
+                    ]
+                }
+            ],
+            "name": "Sam"
+        }
+    ]
+}

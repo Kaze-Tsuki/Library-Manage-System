@@ -99,8 +99,8 @@ void Library::borrowBook(Book* book) {
 			}
 
 			if (inname) {
-				inputEvent(event, username, 'A', 'z', 20);
-				inputNameText.setString(username); // ��s�e���W����r
+				inputEvent(event, username, ' ', 'z', 20);
+				inputNameText.setString(username); // 更新畫面上的文字
 			}
 			this_thread::sleep_for(std::chrono::milliseconds(5));
 		}
@@ -288,7 +288,7 @@ void Library::listBooks() {
 		{
 			if (event.type == sf::Event::Closed)
 				window.close();
-			// �ƹ��I����J��
+			// 
 			if (event.type == sf::Event::MouseButtonPressed &&
 				event.mouseButton.button == sf::Mouse::Left)
 			{
@@ -342,7 +342,7 @@ void Library::listBooks() {
 				present.at(i + curPage * 10)->displayBrief(window, 50, 50 + i * 60);
 			}
 			catch (const std::out_of_range& e) {
-				// �p�G�V�ɥi�H���L�ΰO�����~
+				// Handle the out of range exception
 				std::cerr << "Conflict of multi tasking: " << e.what() << std::endl;
 			}
 			else break;
@@ -481,7 +481,7 @@ void Library::rearrangeBooks(vector<Book*>& sorted) {
 	bool inName = false, inAuthor = false, inCategory = false, isAsc = true;
 	Date filterPublished;
 	size_t sortIndex = 0, togglePusblished = 0;
-	const vector<string> sortBy = { "Name", "Author", "Published", "Category" };
+	const vector<string> sortBy = { "NYA!", "Name", "Author", "Published", "Category" };
 	string filterName, filterAuthor, filterCategory;
 
 	while (window.isOpen())
@@ -514,7 +514,7 @@ void Library::rearrangeBooks(vector<Book*>& sorted) {
 				}
 				else if (submitBox.getGlobalBounds().contains(mousePos)) {
 					if (filterPublished.changing.load()) {
-						thread([]() { errorWindow("Already running input text window."); }).detach();
+						thread([]() { errorWindow("Window is not closed can't exit!"); }).detach();
 						continue;
 					}
 					window.close();
@@ -574,15 +574,15 @@ void Library::rearrangeBooks(vector<Book*>& sorted) {
 			}
 			if (inName) {
 				inputEvent(event, filterName, 'A', 'z', 20);
-				filterNameText.setString(filterName); // ��s�e���W����r
+				filterNameText.setString(filterName);
 			}
 			else if (inAuthor) {
 				inputEvent(event, filterAuthor, 'A', 'z', 20);
-				filterAuthorText.setString(filterAuthor); // ��s�e���W����r
+				filterAuthorText.setString(filterAuthor);
 			}
 			else if (inCategory) {
 				inputEvent(event, filterCategory, 'A', 'z', 20);
-				filterCategoryText.setString(filterCategory); // ��s�e���W����r
+				filterCategoryText.setString(filterCategory);
 			}
 		}
 		// Render
@@ -618,22 +618,23 @@ void Library::rearrangeBooks(vector<Book*>& sorted) {
 		sorted.erase(my_remove_if(sorted.begin(), sorted.end(),
 			[&](Book* b) { return b->published > filterPublished; }),
 			sorted.end());
-	if (sortIndex == 0) {
+	if (sortIndex == 0) return; // no sort
+	if (sortIndex == 1) {
 		msort(sorted.begin(), sorted.end(), [&](Book* a, Book* b) {
 			return isAsc ? a->name < b->name : a->name > b->name;
 			});
 	}
-	else if (sortIndex == 1) {
+	else if (sortIndex == 2) {
 		msort(sorted.begin(), sorted.end(), [&](Book* a, Book* b) {
 			return isAsc ? a->author < b->author : a->author > b->author;
 			});
 	}
-	else if (sortIndex == 2) {
+	else if (sortIndex == 3) {
 		msort(sorted.begin(), sorted.end(), [&](Book* a, Book* b) {
 			return isAsc ? a->published < b->published : a->published > b->published;
 			});
 	}
-	else if (sortIndex == 3) {
+	else if (sortIndex == 4) {
 		msort(sorted.begin(), sorted.end(), [&](Book* a, Book* b) {
 			return isAsc ? a->category < b->category : a->category > b->category;
 			});

@@ -452,7 +452,8 @@ void Book::displayFUser(sf::RenderWindow& window, int x, int y) {
 	CategoryText.setFillColor(sf::Color::Black);
 	CategoryText.setPosition(x + 250, y + 5);
 	sf::Text dueText("Due: " + due.getString(), font, 20);
-	dueText.setFillColor(sf::Color::Black);
+    if (due > today) dueText.setFillColor(sf::Color::Red);
+    else dueText.setFillColor(sf::Color::Black);   
 	dueText.setPosition(x + 250, y + 30);
 	renderShape(window, { &nameText, &authorText, &CategoryText, &dueText });
 }
