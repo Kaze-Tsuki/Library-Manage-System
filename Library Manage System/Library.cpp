@@ -39,6 +39,10 @@ void Library::addUser(const User& user) {
 }
 
 void Library::borrowBook(Book* book) {
+	if (book->availableCopies == 0) {
+		thread([]() { errorWindow("No copies available."); }).detach();
+		return;
+	}
 	if (book->changing.exchange(true)) {
 		thread([]() { errorWindow("Already running input text window."); }).detach();
 		return;
@@ -71,7 +75,7 @@ void Library::borrowBook(Book* book) {
 	submit_btn_innerText.setFillColor(sf::Color::Black);
 	set_mid(submit_btn, submit_btn_innerText);
 
-	bool inname = false;// �O�_���b��J
+	bool inname = false;
 	
 	while (window.isOpen())
 	{
@@ -80,7 +84,6 @@ void Library::borrowBook(Book* book) {
 		{
 			if (event.type == sf::Event::Closed)
 				window.close();
-			// �ƹ��I����J��
 			if (event.type == sf::Event::MouseButtonPressed &&
 				event.mouseButton.button == sf::Mouse::Left)
 			{
@@ -161,7 +164,7 @@ void Library::printBooks(const size_t& start){
 		return;
 	}
 	// using a new window
-	sf::RenderWindow window(sf::VideoMode(650, 270), "Books");
+	sf::RenderWindow window(sf::VideoMode(650, 280), "Books");
 	window.setFramerateLimit(20);
 
 	size_t curBook = start;
@@ -192,6 +195,11 @@ void Library::printBooks(const size_t& start){
 	sf::Text giveBackBtnText("Give Back", font, 20);
 	initButton(giveBackBtn, giveBackBtnText, 350, 150);
 
+	// change properties
+	sf::RectangleShape changeBtn(sf::Vector2f(60, 30));
+	sf::Text changeBtnText("Change", font, 16);
+	initButton(changeBtn, changeBtnText, 35, 215);
+
 	// Display books
 	while (window.isOpen())
 	{
@@ -200,7 +208,6 @@ void Library::printBooks(const size_t& start){
 		{
 			if (event.type == sf::Event::Closed)
 				window.close();
-			// �ƹ��I����J��
 			if (event.type == sf::Event::MouseButtonPressed &&
 				event.mouseButton.button == sf::Mouse::Left)
 			{
@@ -226,15 +233,86 @@ void Library::printBooks(const size_t& start){
 					// give back
 					thread(&Library::giveBackBook, this, books[curBook]).detach();
 				}
+				else if (changeBtn.getGlobalBounds().contains(mousePos)) {
+					// change book properties
+					thread(&Library::changeAvailableCopies, this, books[curBook]).detach();
+				}
 			}
 			this_thread::sleep_for(std::chrono::milliseconds(30));
 		}
 		window.clear(sf::Color(210, 233, 233));
 		books[curBook]->display(window, 35, 35);
 		renderShape(window, { &nextBtn, &prevBtn, &borrowBtn, &giveBackBtn,
-			&nextBtnText, &prevBtnText, &borrowBtnText, &giveBackBtnText , &pageText });
+			&nextBtnText, &prevBtnText, &borrowBtnText, &giveBackBtnText , &pageText,
+			&changeBtn, &changeBtnText });
 		window.display();
 	}
+}
+
+void Library::changeAvailableCopies(Book* book)
+{
+	if (book->changing.exchange(true)) {
+		thread([]() { errorWindow("Already running input text window."); }).detach();
+		return;
+	}
+	sf::RenderWindow window(sf::VideoMode(400, 150), "Change Book Amount");
+	window.setFramerateLimit(20);
+	// copyAmount
+	sf::RectangleShape inputcopyAmount(sf::Vector2f(150, 50));
+	sf::Text copyAmounttxt("Copies", font, 20);
+	sf::Text inputcopyAmountText(to_string(book->copyAmount), font, 24);
+	initInputBox(inputcopyAmount, inputcopyAmountText, copyAmounttxt, 50, 50);
+	// Submit
+	sf::RectangleShape submit_btn(sf::Vector2f(100, 50));
+	submit_btn.setFillColor(sf::Color(168, 255, 255));
+	submit_btn.setOutlineColor(sf::Color(167, 167, 211));
+	submit_btn.setOutlineThickness(2);
+	submit_btn.setPosition(230, 50);
+	sf::Text submit_btn_innerText("Submit", font, 24);
+	submit_btn_innerText.setFillColor(sf::Color::Black);
+	set_mid(submit_btn, submit_btn_innerText);
+
+	bool incopyAmount = false;// 是否正在輸入
+	string scopyAmount(to_string(book->copyAmount));
+	if (scopyAmount == "0") scopyAmount = "";
+
+	while (window.isOpen())
+	{
+		sf::Event event;
+		while (window.pollEvent(event))
+		{
+			if (event.type == sf::Event::Closed)
+				window.close();
+			// 滑鼠點擊輸入框
+			if (event.type == sf::Event::MouseButtonPressed &&
+				event.mouseButton.button == sf::Mouse::Left) {
+				sf::Vector2f mousePos(event.mouseButton.x, event.mouseButton.y);
+				if (inputcopyAmount.getGlobalBounds().contains(mousePos)) {
+					incopyAmount = true;
+				}
+				else if (submit_btn.getGlobalBounds().contains(mousePos)) {
+					incopyAmount = false;
+					if (scopyAmount == "") scopyAmount = "1";
+					int newamount = max(min(stoi(scopyAmount), 1000000), 0);
+					if (book->changeAmount(newamount))
+						window.close();
+				}
+				else {
+					incopyAmount = false;
+				}
+			}
+			// input copyAmount
+			if (incopyAmount) {
+				inputEvent(event, scopyAmount, '0', '9', 4);
+				inputcopyAmountText.setString(scopyAmount); // 更新畫面上的文字
+			}
+		}
+		window.clear(sf::Color(210, 233, 233));
+		renderShape(window, { &inputcopyAmount, &submit_btn , &copyAmounttxt, &submit_btn_innerText, &inputcopyAmountText
+			});
+		window.display();
+	}
+	book->changing.store(false);
 }
 
 void Library::listBooks() {

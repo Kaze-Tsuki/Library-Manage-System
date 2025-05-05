@@ -366,6 +366,17 @@ bool Book::change() {
     return true;
 }
 
+bool Book::changeAmount(int newvalue) {
+	int copiesDiff = newvalue - copyAmount;
+	if (newvalue < copyAmount -  availableCopies) { // You can't dump those are lended
+		thread([]() { errorWindow("Not enough copies available."); }).detach();
+		return false;
+	}
+	copyAmount = newvalue;
+	availableCopies += copiesDiff;
+	return true;
+}
+
 void Book::print_book() {
     cout << "Name: " << name << endl;
     cout << "Author: " << author << endl;

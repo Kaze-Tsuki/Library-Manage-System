@@ -37,6 +37,7 @@ public:
 	Book();
 	Book(const Book& other);
 	bool change();
+	bool changeAmount(int newvalue);
 	void print_book();
 	void display(sf::RenderWindow& window, int x, int y);
 	void displayBrief(sf::RenderWindow& window, int x, int y);
@@ -70,6 +71,7 @@ public:
 	void borrowBook(Book* book);// use a new window
 	void giveBackBook(Book* book); // use a new window
 	void printBooks(const size_t& start); // use a new window
+	void changeAvailableCopies(Book* book); // use a new window
 	void printUser(User& user); // use a new window
 	void rearrangeBooks(vector<Book*>&); // use a new window
 	void listBooks(); // use a new window
