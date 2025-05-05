@@ -47,15 +47,13 @@ To install the library management system, follow these steps:
 
 6. Follow the on-screen instructions or read the following paragraph to navigate through the system and manage your library resources.
 
-*If you are not using Windows, please disable the control-V feature in input.cpp and comment the `#include <windows.h>` line in input.cpp. And you may need to modify the code to make it work on your platform.*
-
 ## Usage
 
 This part will introduce how to use the library management system. It will cover the interface and features of the system.
 
 ### Interface
 
-1. Main Interface: Including 6 Links to manage the library resources.
+1. Main Interface: Including 6 Links to manage the library resources. Press the `X` button on the top right corner to exit the system. The links are:
    - **Add Book**: Add a new book to the library.
    - **View Book**: View the details of a book in the library.
    - **List Book**: List all the books in the library.
@@ -71,7 +69,7 @@ This part will introduce how to use the library management system. It will cover
     - **Copy**: The number of copies of the book available in the library.
     - **Published Date**: The year the book was published.
 
-3. View Book: This interface allows you to view the details of a book in the library. You can use `next` and `prev` to navigate through the books. You can also `borrow` or `return` a book from this interface. The books are arranged by added time.
+3. View Book: This interface allows you to view the details of a book in the library. You can use `next` and `prev` to navigate through the books. You can also `borrow` or `return` a book from this interface. The books are arranged by added time. There is also a small `change` button to change the books copy amount.
 
 4. List Book: This interface allows you to list all the books in the library. You can use `next` and `prev` to navigate through the books. You can use the `filter button` to filter the books by name, author, category, and published year sorted by the attribute you want in ascending or descending order. `On clicking the books`, you will be redirected to the view book interface of the book.
 Each Line contains the following information:
@@ -81,27 +79,33 @@ Each Line contains the following information:
     - **Copy**: available copies / total copies
     - **Published Date**
 
-5. List User: This interface allows you to list all the users in the library. You can use `next` and `prev` to navigate through the users. `On clicking the users`, you will be redirected to the view user interface of the user.
+5. Filter Book: This interface allows you to filter the books in the library by name, author, category, and published year. You can also sort the books by the attribute you want by the attribute you want in ascending or descending order. The filtered books will be displayed in a list format. *Feature: open two filter window at a time can achieve find date within a interval*
+    - **Name**
+    - **Author**
+    - **Category**
+    - **Published Date**: `>=` means the displayed date will after the date you entered, `<=` means the displayed date will be before the date you entered.
+
+6. List User: This interface allows you to list all the users in the library. You can use `next` and `prev` to navigate through the users. `On clicking the users`, you will be redirected to the view user interface of the user.
 Each Line contains the following information:
     - **Name**
     - **Borrowed Books**: The number of books borrowed by the user.
 
-6. View User: This interface allows you to view the books borrowed by a user. You can use `next` and `prev` to navigate through the books. You can also `return` a book **directly** from this interface. The books are arranged by borrowed time.
+7. View User: This interface allows you to view the books borrowed by a user. You can use `next` and `prev` to navigate through the books. You can also `return` a book **directly** from this interface. The books are arranged by borrowed time.
 Each Line contains the following information:
     - **Name**
     - **Due Date**: The date when the book is due to be returned.
 
-7. Borrow Book: This interface is triggered when you click the borrow button in the view book interface. It allows you to borrow a book from the library. You can enter the user's name and the due date for returning the book.
+8. Borrow Book: This interface is triggered when you click the borrow button in the view book interface. It allows you to borrow a book from the library. You can enter the user's name and the due date for returning the book.
     - **User Name**
     - **Due Date**
 
-8. Return Book: This interface is triggered when you click the return button in the view book interface. It allows you to return a book to the library. You can enter the user's name to return a book.
+9. Return Book: This interface is triggered when you click the return button in the view book interface. It allows you to return a book to the library. You can enter the user's name to return a book.
     - **User Name**
 
-9. Save: This interface allows you to save the current state of the library to a file. You can enter the file name and the data will be stored as json format.
+10. Save: This interface allows you to save the current state of the library to a file. You can enter the file name and the data will be stored as json format.
     - **File Name**
 
-10. Load: This interface allows you to load the library state from a file. You can enter the file name and the data will be loaded from json format.
+11. Load: This interface allows you to load the library state from a file. You can enter the file name and the data will be loaded from json format.
     - **File Name**
 
 ### Features
@@ -114,7 +118,41 @@ Each Line contains the following information:
 
 - **Intuitive Navigation**: The system provides intuitive navigation through the use of links between different interfaces. You can easily switch between different sections of the system to manage your library resources.
 
-- **Json File Format**: The system uses JSON file format to store the library state. This makes it easy to read and write data, and allows for easy integration with other systems. Or develop a webpage to display the data.
+- **Json File Format**: The system uses JSON file format to store the library state. This makes it easy to read and write data, and allows for easy integration with other systems or develop a webpage to display the data.
+```json
+{
+    "books": [
+        {
+            "ISBN": "0000000000000",
+            "author": "someone",
+            "availableCopies": 0,
+            "category": "some category",
+            "copyAmount": 1,
+            "due": [
+                2020,
+                1,
+                1
+            ],
+            "name": "a book",
+            "published": [
+                3000,
+                1,
+                1
+            ]
+        }
+    ],
+    "users": [
+        {
+            "borrowing": [
+                {
+                    // the book
+                }
+            ],
+            "name": "Sam"
+        }
+    ]
+}
+```
 
 ## Bugs
 

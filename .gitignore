@@ -41,3 +41,5 @@
 /Library Manage System.sln
 /Report.md
 /.vscode
+*.pdf
+books.json

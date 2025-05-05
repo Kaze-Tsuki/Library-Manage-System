@@ -16,7 +16,8 @@ int main()
     sf::RenderWindow window(sf::VideoMode(350, 350), "Main Interface");
     window.setFramerateLimit(10);
 
-    if (!font.loadFromFile("arial.ttf")) { // 記得有字體檔
+	// Load font
+    if (!font.loadFromFile("arial.ttf")) {
         std::cout << "Failed to load font\n";
         return -1;
     }
@@ -28,11 +29,10 @@ int main()
 	today.month = now.tm_mon + 1;
 	today.day = now.tm_mday;
 
-    std::string userInput = ""; // 儲存輸入的文字
+    std::string userInput = "";
 	Library library;
 	struct inputText inputText;
 
-    // 輸入框
 	// AddBook
     sf::RectangleShape AddBook(sf::Vector2f(100, 50));
 	sf::Text AddBookInnerText("Add Book", font, 20);
@@ -72,65 +72,66 @@ int main()
     window.display();
 
     sf::Event event;
-        while (window.waitEvent(event))
-        {
-            if (event.type == sf::Event::Closed)
-                window.close();
-            if (event.type == sf::Event::MouseButtonPressed &&
-                event.mouseButton.button == sf::Mouse::Left) {
-                sf::Vector2f mousePos(event.mouseButton.x, event.mouseButton.y);
-                if (AddBook.getGlobalBounds().contains(mousePos)) {
-                    std::thread([&library]() {
-                        Book* book = new Book();
-						bool create = book->change();
-						if (!create) return;
-                        library.addBook(book);
-                    }).detach();
-                }
-				else if (PrintBook.getGlobalBounds().contains(mousePos)) {
-					// Print book
-					thread(&Library::printBooks, &library, 0).detach();
-				}
-                else if (ListBooks.getGlobalBounds().contains(mousePos)) {
-                    // List books
-                    thread(&Library::listBooks, &library).detach();
-                }
-				else if (ListUsers.getGlobalBounds().contains(mousePos)) {
-					// List users
-					thread(&Library::listUsers, &library).detach();
-				}
-                else if (Save.getGlobalBounds().contains(mousePos)) {
-                    // Save library
-					thread([&library, &inputText]() {
-						string savePath;
-						if (inputText.runningInputText) {
-							thread([]() { errorWindow("Already running input text window."); }).detach();
-							return;
-						}
-						inputText.OpenInputText(savePath);
-						if (savePath == "") {
-							return;
-						}
-						saveLibrary(library, savePath + ".json");
-					}).detach();
-                }
-				else if (Load.getGlobalBounds().contains(mousePos)) {
-					// Load library
-					thread([&library, &inputText]() {
-						string savePath;
-						if (inputText.runningInputText) {
-							thread([]() { errorWindow("Already running input text window."); }).detach();
-							return;
-						}
-						inputText.OpenInputText(savePath);
-						if (savePath == "") {
-							return;
-						}
-						loadLibrary(library, savePath + ".json");
-					}).detach();
-				}
-            }
-        }
+	// using waitEvent because it don't need any update for the window
+	while (window.waitEvent(event))
+	{
+		if (event.type == sf::Event::Closed)
+			window.close();
+		if (event.type == sf::Event::MouseButtonPressed &&
+			event.mouseButton.button == sf::Mouse::Left) {
+			sf::Vector2f mousePos(event.mouseButton.x, event.mouseButton.y);
+			if (AddBook.getGlobalBounds().contains(mousePos)) {
+				std::thread([&library]() {
+					Book* book = new Book();
+					bool create = book->change();
+					if (!create) return;
+					library.addBook(book);
+				}).detach();
+			}
+			else if (PrintBook.getGlobalBounds().contains(mousePos)) {
+				// Print book
+				thread(&Library::printBooks, &library, 0).detach();
+			}
+			else if (ListBooks.getGlobalBounds().contains(mousePos)) {
+				// List books
+				thread(&Library::listBooks, &library).detach();
+			}
+			else if (ListUsers.getGlobalBounds().contains(mousePos)) {
+				// List users
+				thread(&Library::listUsers, &library).detach();
+			}
+			else if (Save.getGlobalBounds().contains(mousePos)) {
+				// Save library
+				thread([&library, &inputText]() {
+					string savePath;
+					if (inputText.runningInputText) {
+						thread([]() { errorWindow("Already running input text window."); }).detach();
+						return;
+					}
+					inputText.OpenInputText(savePath);
+					if (savePath == "") {
+						return;
+					}
+					saveLibrary(library, savePath + ".json");
+				}).detach();
+			}
+			else if (Load.getGlobalBounds().contains(mousePos)) {
+				// Load library
+				thread([&library, &inputText]() {
+					string savePath;
+					if (inputText.runningInputText) {
+						thread([]() { errorWindow("Already running input text window."); }).detach();
+						return;
+					}
+					inputText.OpenInputText(savePath);
+					if (savePath == "") {
+						return;
+					}
+					loadLibrary(library, savePath + ".json");
+				}).detach();
+			}
+		}
+	}
 
     return 0;
 }

@@ -28,6 +28,7 @@ void Library::addBook(Book* book) {
    books.push_back(book);
 }
 
+// for loading files
 void Library::addUser(const User& user) {
 	for (const auto& u : users) {
 		if (u.name == user.name) {
@@ -398,6 +399,7 @@ void Library::listBooks() {
 				}
 				else {
 					for (int i = 0; i < 10; i++) {
+						// on click on button[i] div
 						if (i + curPage * 10 < present.size() && bookBtn[i].getGlobalBounds().contains(mousePos)) {
 							// find the book index in the books vector
 							size_t bookIndex = my_find_if(books.begin(), books.end(), [&](Book* b) {
@@ -471,7 +473,7 @@ void Library::listUsers() {
 		{
 			if (event.type == sf::Event::Closed)
 				window.close();
-			// �ƹ��I����J��
+			// left click
 			if (event.type == sf::Event::MouseButtonPressed &&
 				event.mouseButton.button == sf::Mouse::Left)
 			{
@@ -497,6 +499,7 @@ void Library::listUsers() {
 			}
 			this_thread::sleep_for(std::chrono::milliseconds(30));
 		}
+		// Render
 		window.clear(sf::Color(210, 233, 233));
 		renderShape(window, { &nextBtn, &prevBtn, &nextBtnText,
 			&prevBtnText, &pageText });
@@ -556,6 +559,7 @@ void Library::rearrangeBooks(vector<Book*>& sorted) {
 	initButton(submitBox, submitLabel, 300, 250);
 	submitBox.setFillColor(sf::Color(168, 255, 255));
 
+	// switch for current input box
 	bool inName = false, inAuthor = false, inCategory = false, isAsc = true;
 	Date filterPublished;
 	size_t sortIndex = 0, togglePusblished = 0;
@@ -688,11 +692,11 @@ void Library::rearrangeBooks(vector<Book*>& sorted) {
 		sorted.erase(my_remove_if(sorted.begin(), sorted.end(),
 			[&](Book* b) { return b->name != filterName; }),
 			sorted.end());
-	if (togglePusblished == 1) // my_find larger
+	if (togglePusblished == 1) // find larger
 		sorted.erase(my_remove_if(sorted.begin(), sorted.end(),
 			[&](Book* b) { return b->published < filterPublished; }),
 			sorted.end());
-	else if (togglePusblished == 2) // my_find smaller
+	else if (togglePusblished == 2) // find smaller
 		sorted.erase(my_remove_if(sorted.begin(), sorted.end(),
 			[&](Book* b) { return b->published > filterPublished; }),
 			sorted.end());
@@ -773,7 +777,6 @@ void Library::printUser(User& user) {
 		{
 			if (event.type == sf::Event::Closed)
 				window.close();
-			// �ƹ��I����J��
 			if (event.type == sf::Event::MouseButtonPressed &&
 				event.mouseButton.button == sf::Mouse::Left)
 			{
@@ -792,8 +795,9 @@ void Library::printUser(User& user) {
 				}
 				else {
 					for (int i = 0; i < 10; i++) {
+						// on click on some book div
 						if (i + curPage * 10 < user.borrowing.size() && returnBtn[i].getGlobalBounds().contains(mousePos)) {
-							// my_find the book index in the books vector and return the book
+							// find the book index in the books vector and return the book
 							size_t bookIndex = my_find_if(books.begin(), books.end(), [&](Book* b) {
 								return *b == user.borrowing.at(i + curPage * 10);
 								}) - books.begin();
@@ -804,8 +808,9 @@ void Library::printUser(User& user) {
 					}
 				}
 			}
-			this_thread::sleep_for(std::chrono::milliseconds(30));
+			this_thread::sleep_for(std::chrono::milliseconds(10));
 		}
+		// Render
 		window.clear(sf::Color(210, 233, 233));
 		renderShape(window, { &nextBtn, &prevBtn, &nextBtnText,
 			&prevBtnText, &pageText, &instructionText });

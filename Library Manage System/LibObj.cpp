@@ -20,7 +20,7 @@ void Date::change_date() {
     sf::RenderWindow window(sf::VideoMode(800, 170), "Text Input");
     window.setFramerateLimit(30);
 
-    // 輸入框
+    // Shape declaration
     // Year
     sf::RectangleShape inputYear(sf::Vector2f(200, 50));
     sf::Text Yeartxt("Year", font, 20);
@@ -49,7 +49,7 @@ void Date::change_date() {
     submit_btn_innerText.setFillColor(sf::Color::Black);
     set_mid(submit_btn, submit_btn_innerText);
 
-    bool inyear = false, inmonth = false, inday = false;// 是否正在輸入
+    bool inyear = false, inmonth = false, inday = false;// input flag
     string syear(to_string(year)), smonth(to_string(month)), sday(to_string(day));
     if (syear == "0") syear = "";
     if (smonth == "0") smonth = "";
@@ -63,7 +63,6 @@ void Date::change_date() {
             if (event.type == sf::Event::Closed)
                 window.close();
 
-            // 滑鼠點擊輸入框
             if (event.type == sf::Event::MouseButtonPressed && 
                 event.mouseButton.button == sf::Mouse::Left) {
                 sf::Vector2f mousePos(event.mouseButton.x, event.mouseButton.y);
@@ -91,20 +90,20 @@ void Date::change_date() {
                 }
             }
 
-            // 鍵盤輸入文字
+            // check if need input
             if (inyear) {
 				inputEvent(event, syear, '0', '9', 4);
-                inputYearText.setString(syear); // 更新畫面上的文字
+                inputYearText.setString(syear); 
             }
 
             if (inmonth) {
 				inputEvent(event, smonth, '0', '9', 2);
-                inputMonthText.setString(smonth); // 更新畫面上的文字
+                inputMonthText.setString(smonth); 
             }
 
             if (inday) {
 				inputEvent(event, sday, '0', '9', 2);
-                inputDayText.setString(sday); // 更新畫面上的文字
+                inputDayText.setString(sday); 
             }
             this_thread::sleep_for(std::chrono::milliseconds(5));
         }
@@ -116,7 +115,7 @@ void Date::change_date() {
 
         window.display();
     }
-    changing.store(false); // 關閉 flag
+    changing.store(false); // close the changing flag
     return;
 }
 
@@ -265,7 +264,7 @@ bool Book::change() {
 	abandon_btn_innerText.setFillColor(sf::Color::Black);
 	set_mid(abandon_btn, abandon_btn_innerText);
 
-    bool inname = false, inauthor = false, inISBN = false, incategory = false, incopyAmount = false;// 是否正在輸入
+    bool inname = false, inauthor = false, inISBN = false, incategory = false, incopyAmount = false;// 嚙瞌嚙稻嚙踝蕭嚙箭嚙踝蕭J
     string sname(name), sauthor(author), sISBN(ISBN), scategory(category), scopyAmount(to_string(copyAmount));
 
     if (scopyAmount == "0") scopyAmount = "";
@@ -277,7 +276,6 @@ bool Book::change() {
         {
             if (event.type == sf::Event::Closed)
                 window.close();
-            // 滑鼠點擊輸入框
             if (event.type == sf::Event::MouseButtonPressed &&
                 event.mouseButton.button == sf::Mouse::Left) {
 
@@ -330,29 +328,30 @@ bool Book::change() {
                 PublichedContent.setString(published.getString());
             }
 
-            // 鍵盤輸入文字
+            // check if need input
             if (inname) {
                 inputEvent(event, sname, ' ', 'z', 19);
-                inputNameText.setString(sname); // 更新畫面上的文字
+                inputNameText.setString(sname); 
             }
             else if (inauthor) {
                 inputEvent(event, sauthor, ' ', 'z', 19);
-                inputAuthorText.setString(sauthor); // 更新畫面上的文字
+                inputAuthorText.setString(sauthor); 
             }
             else if (inISBN) {
                 inputEvent(event, sISBN, '0', '9', 13);
-                inputISBNText.setString(sISBN); // 更新畫面上的文字
+                inputISBNText.setString(sISBN); 
             }
             else if (incategory) {
                 inputEvent(event, scategory, ' ', 'z', 19);
-                inputCategoryText.setString(scategory); // 更新畫面上的文字
+                inputCategoryText.setString(scategory); 
             }
             else if (incopyAmount) {
                 inputEvent(event, scopyAmount, '0', '9', 4);
-                inputcopyAmountText.setString(scopyAmount); // 更新畫面上的文字
+                inputcopyAmountText.setString(scopyAmount); 
             }
             //this_thread::sleep_for(std::chrono::milliseconds(7));
         }
+        // Render the window
         window.clear(sf::Color(210, 233, 233));
 
         renderShape(window, { &inputName, &inputAuthor, &inputISBN, &inputCategory, &abandon_btn
