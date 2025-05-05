@@ -404,11 +404,11 @@ bool Book::operator==(const Book& other) const {
 }
 
 void Book::display(sf::RenderWindow& window, int x, int y) {
-	sf::Text nameText("Name: " + name, font, 20);
+	sf::Text nameText("Name: " + name.substr(0, 20), font, 20);
 	nameText.setFillColor(sf::Color::Black);
 	nameText.setPosition(x, y);
 	window.draw(nameText);
-	sf::Text authorText("Author: " + author, font, 20);
+	sf::Text authorText("Author: " + author.substr(0, 20), font, 20);
 	authorText.setFillColor(sf::Color::Black);
 	authorText.setPosition(x, y + 30);
 	window.draw(authorText);
@@ -416,7 +416,7 @@ void Book::display(sf::RenderWindow& window, int x, int y) {
 	ISBNText.setFillColor(sf::Color::Black);
 	ISBNText.setPosition(x, y + 60);
 	window.draw(ISBNText);
-	sf::Text categoryText("Category: " + category, font, 20);
+	sf::Text categoryText("Category: " + category.substr(0, 20), font, 20);
 	categoryText.setFillColor(sf::Color::Black);
 	categoryText.setPosition(x, y + 90);
 	window.draw(categoryText);
@@ -432,13 +432,13 @@ void Book::display(sf::RenderWindow& window, int x, int y) {
 }
 
 void Book::displayBrief(sf::RenderWindow& window, int x, int y) {
-	sf::Text nameText("Name: " + name, font, 20);
+	sf::Text nameText("Name: " + name.substr(0, 20), font, 20);
 	nameText.setFillColor(sf::Color::Black);
 	nameText.setPosition(x, y+5);
-	sf::Text authorText("Author: " + author, font, 20);
+	sf::Text authorText("Author: " + author.substr(0, 20), font, 20);
 	authorText.setFillColor(sf::Color::Black);
 	authorText.setPosition(x, y+30);
-	sf::Text CategoryText("Category: " + category, font, 20);
+	sf::Text CategoryText("Category: " + category.substr(0, 20), font, 20);
 	CategoryText.setFillColor(sf::Color::Black);
 	CategoryText.setPosition(x + 370, y+5);
 	sf::Text dateText("Published: " + published.getString(), font, 20);
