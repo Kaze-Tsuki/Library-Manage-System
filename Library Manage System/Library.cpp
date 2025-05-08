@@ -655,15 +655,15 @@ void Library::rearrangeBooks(vector<Book*>& sorted) {
 				}
 			}
 			if (inName) {
-				inputEvent(event, filterName, 'A', 'z', 20);
+				inputEvent(event, filterName, ' ', 'z', 20);
 				filterNameText.setString(filterName);
 			}
 			else if (inAuthor) {
-				inputEvent(event, filterAuthor, 'A', 'z', 20);
+				inputEvent(event, filterAuthor, ' ', 'z', 20);
 				filterAuthorText.setString(filterAuthor);
 			}
 			else if (inCategory) {
-				inputEvent(event, filterCategory, 'A', 'z', 20);
+				inputEvent(event, filterCategory, ' ', 'z', 20);
 				filterCategoryText.setString(filterCategory);
 			}
 		}

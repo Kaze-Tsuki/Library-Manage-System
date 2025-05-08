@@ -78,16 +78,17 @@ bool my_all_of(InputIt first, InputIt last, UnaryPredicate p) {
 
 template<typename ForwardIt, typename UnaryPredicate>
 ForwardIt my_remove_if(ForwardIt first, ForwardIt last, UnaryPredicate pred) {
-    first = std::find_if(first, last, pred); // Find first element to remove
+    first = my_find_if(first, last, pred); // Find first element to remove
     if (first == last) return last;
 
-    ForwardIt next = std::next(first);
+    ForwardIt next = first;
+    ++next; // Move to the next element
     while (next != last) {
         if (!pred(*next)) {
-            *first = std::move(*next);
-            ++first;
+            *first = *next; // Assign the element to the front
+            ++first; // Move the new end forward
         }
-        ++next;
+        ++next; // Always move to the next element
     }
     return first; // New logical end
 }

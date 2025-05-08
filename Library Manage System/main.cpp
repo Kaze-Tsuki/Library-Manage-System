@@ -13,7 +13,7 @@ Date today;
 
 int main()
 {
-    sf::RenderWindow window(sf::VideoMode(350, 350), "Main Interface");
+    sf::RenderWindow window(sf::VideoMode(330, 320), "Main Interface");
     window.setFramerateLimit(10);
 
 	// Load font
