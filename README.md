@@ -61,7 +61,7 @@ This part will introduce how to use the library management system. It will cover
    - **Save**: Save the current state of the library to a file.
    - **Load**: Load the library state from a file.
 
-2. Add Book: This interface allows you to add a new book to the library. You can enter the book's name, author, and other details.
+2. Add Book: This interface allows you to add a new book to the library. You can enter the book's name, author, and other details. ISBN is the unique identifier for the book. The system will check if the book already exists in the library. However, you still need to fill out all the attributes.
     - **Name**: The name of the book.
     - **Author**: The author of the book.
     - **ISBN**: The ISBN number of the book.

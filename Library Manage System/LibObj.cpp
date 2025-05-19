@@ -399,7 +399,7 @@ bool Book::valid() const {
 }
 
 bool Book::operator==(const Book& other) const {
-    return name == other.name && author == other.author && ISBN == other.ISBN;
+    return ISBN == other.ISBN;
 }
 
 void Book::display(sf::RenderWindow& window, int x, int y) {
